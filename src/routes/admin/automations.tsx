@@ -1,0 +1,64 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { toast } from "sonner";
+import { Switch } from "@/components/ui/switch";
+import { PageHeader, Panel, Pill, Section, Stat } from "@/components/kit";
+import { useApp } from "@/lib/store";
+import { useLang } from "@/lib/i18n";
+import { num, shortDate } from "@/lib/format";
+
+function Automations() {
+  const { db, can, actions } = useApp();
+  const { t } = useLang();
+  const isAdmin = can("admin");
+
+  return (
+    <div className="space-y-6">
+      <PageHeader
+        title={t("Automations", "الأتمتة")}
+        subtitle={t("Rules that watch records and act: escalate stuck deals, flag missing Posting Coverage, chase overdue invoices. Every run is logged.", "قواعد تراقب السجلات وتتصرف: تصعيد الصفقات المتوقفة، رصد نقص تغطية النشر، متابعة الفواتير المتأخرة. كل تشغيل مسجل.")}
+      />
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <Stat label={t("Rules", "القواعد")} value={String(db.automationRules.length)} tone="brand" />
+        <Stat label={t("Enabled", "مفعلة")} value={String(db.automationRules.filter((r) => r.enabled).length)} tone="success" />
+        <Stat label={t("Total runs", "مرات التشغيل")} value={num(db.automationRules.reduce((s, r) => s + r.runs, 0))} />
+        <Stat label={t("Failures", "إخفاقات")} value={num(db.automationRules.reduce((s, r) => s + r.failures, 0))} tone="danger" />
+      </div>
+      <Section title={t("Rule library", "مكتبة القواعد")}>
+        <div className="grid gap-3 xl:grid-cols-2">
+          {db.automationRules.map((r) => (
+            <Panel key={r.id}>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold">{r.name}</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">{t("Last run", "آخر تشغيل")} {shortDate(r.lastRun)} · {num(r.runs)} {t("runs", "تشغيل")} · {num(r.failures)} {t("failures", "إخفاق")}</p>
+                </div>
+                <Switch
+                  checked={r.enabled}
+                  disabled={!isAdmin}
+                  onCheckedChange={() => { actions.toggleAutomation(r.id); toast.success(r.enabled ? t("Rule paused", "تم إيقاف القاعدة") : t("Rule enabled", "تم تفعيل القاعدة"), { description: r.name }); }}
+                />
+              </div>
+              <div className="mt-3 space-y-1.5 text-xs">
+                <p><Pill tone="brand">{t("When", "عند")}</Pill> <span className="text-muted-foreground">{r.when}</span></p>
+                <p><Pill tone="warning">{t("If", "إذا")}</Pill> <span className="text-muted-foreground">{r.ifCriteria}</span></p>
+                <p><Pill tone="success">{t("Then", "عندها")}</Pill> <span className="text-muted-foreground">{r.then}</span></p>
+              </div>
+            </Panel>
+          ))}
+        </div>
+      </Section>
+    </div>
+  );
+}
+
+export const Route = createFileRoute("/admin/automations")({
+  head: () => ({
+    meta: [
+      { title: "Automations | Trygc Operations OS" },
+      { name: "description", content: "When/if/then automation rules that escalate stuck deals, coverage gaps and overdue invoices." },
+      { property: "og:title", content: "Automations | Trygc Operations OS" },
+      { property: "og:description", content: "Rules that watch records and act, with run and failure history." },
+    ],
+  }),
+  component: Automations,
+});
