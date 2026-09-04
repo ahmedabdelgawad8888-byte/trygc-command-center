@@ -59,10 +59,12 @@ export function DataTable<T>({
   const [hidden, setHidden] = useState<string[]>(columns.filter((c) => c.defaultHidden).map((c) => c.key));
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState<string[]>([]);
-  const { can } = useApp();
+  const { can, log, currentUser } = useApp();
   const canExport = can("export");
-  const { drill, setDrill } = useDrill();
+  const { drill, trail, setDrill, registerPanel, setPanelOpen } = useDrill();
   const { prefs, bounds } = useExportPrefs();
+  const { enqueue } = useExportQueue();
+
 
   const visible = columns.filter((c) => !hidden.includes(c.key));
 
