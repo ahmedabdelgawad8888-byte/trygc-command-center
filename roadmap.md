@@ -26,3 +26,8 @@
 - [x] Fixed pipeline-by-stage chart (funnel bars)
 - [x] Use uploaded Trygc logo image everywhere
 - [x] Added overview charts to CRM, campaigns, community, ops, tasks, finance and files pages
+
+## Export, drill-down & permissions pass
+- [x] Shared export preferences panel (date range, filters, columns, branding) applied to every CSV/PDF
+- [x] Click any chart segment to filter the records table on that page (with clearable chip)
+- [x] Export buttons hidden for roles without export rights; confidential client profitability gated
