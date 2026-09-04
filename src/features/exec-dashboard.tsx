@@ -2,8 +2,6 @@ import { useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 import { AlertTriangle, ArrowUpRight, BadgeCheck, Banknote, Megaphone, Target, Users } from "lucide-react";
 import {
-  Area,
-  AreaChart,
   Bar as RBar,
   BarChart,
   CartesianGrid,
@@ -15,6 +13,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+
 import { Button } from "@/components/ui/button";
 import { PageHeader, Panel, Pill, Section, Stat, HealthPill, Bar } from "@/components/kit";
 import { DataTable, type Column } from "@/components/data-table";
