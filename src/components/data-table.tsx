@@ -1,5 +1,5 @@
 import { useMemo, useState, type ReactNode } from "react";
-import { ArrowDown, ArrowUp, ChevronsUpDown, Download, FileText, Search, Settings2 } from "lucide-react";
+import { ArrowDown, ArrowUp, ChevronsUpDown, Download, FileText, Lock, Search, Settings2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { useApp } from "@/lib/store";
+import { useDrill } from "@/lib/drill";
+import { useExportPrefs } from "@/lib/export-prefs";
+import { ExportPreferencesPanel } from "@/components/export-preferences";
 
 export interface Column<T> {
   key: string;
@@ -53,14 +57,37 @@ export function DataTable<T>({
   const [hidden, setHidden] = useState<string[]>(columns.filter((c) => c.defaultHidden).map((c) => c.key));
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState<string[]>([]);
+  const { can } = useApp();
+  const canExport = can("export");
+  const { drill, setDrill } = useDrill();
+  const { prefs, bounds } = useExportPrefs();
 
   const visible = columns.filter((c) => !hidden.includes(c.key));
 
+  // Column used for the shared export date range, when the table has one.
+  const dateCol = columns.find((c) => /date|due|deadline|at$|issued|paid/i.test(c.key) && c.sortValue);
+
+  const rowText = (r: T) => `${searchable ? searchable(r) : ""} ${columns.map((c) => (c.sortValue ? c.sortValue(r) : "")).join(" ")}`.toLowerCase();
+
+  const inRange = useMemo(() => {
+    if (!bounds || !dateCol?.sortValue) return (_r: T) => true;
+    return (r: T) => {
+      const v = String(dateCol.sortValue!(r)).slice(0, 10);
+      return v >= bounds.from && v <= bounds.to;
+    };
+  }, [bounds, dateCol]);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q || !searchable) return rows;
-    return rows.filter((r) => searchable(r).toLowerCase().includes(q));
-  }, [rows, query, searchable]);
+    const d = drill?.label.toLowerCase();
+    return rows.filter((r) => {
+      if (!inRange(r)) return false;
+      if (q && searchable && !searchable(r).toLowerCase().includes(q)) return false;
+      if (d && !rowText(r).includes(d)) return false;
+      return true;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rows, query, searchable, drill, inRange, columns]);
 
   const sorted = useMemo(() => {
     if (!sort) return filtered;
@@ -83,11 +110,14 @@ export function DataTable<T>({
   const stamp = new Date().toISOString().slice(0, 16).replace("T", " ");
   const fileBase = `trygc-crm-hub-${exportName.replace(/^trygc-?/, "")}`;
 
+  const exportCols = prefs.columns === "all" ? columns : visible;
+  const exportRows = (prefs.applyFilters ? sorted : rows.filter(inRange));
+
   const exportCsv = () => {
-    const head = visible.map((c) => `"${c.header}"`).join(",");
-    const body = sorted
+    const head = exportCols.map((c) => `"${c.header}"`).join(",");
+    const body = exportRows
       .map((r) =>
-        visible
+        exportCols
           .map((c) => {
             const v = c.sortValue ? c.sortValue(r) : "";
             return `"${String(v).replace(/"/g, '""')}"`;
@@ -95,8 +125,12 @@ export function DataTable<T>({
           .join(","),
       )
       .join("\n");
-    const banner = [`"Trygc CRM HUB"`, `"${brandTitle}"`, `"Generated ${stamp} UTC"`, `""`].join("\n");
-    const blob = new Blob([`${banner}\n${head}\n${body}`], { type: "text/csv;charset=utf-8" });
+    const rangeLine = bounds ? `"Date range ${bounds.from} to ${bounds.to}"` : `"Date range: all time"`;
+    const filterLine = `"Filters ${prefs.applyFilters ? "applied" : "ignored"}${prefs.applyFilters && drill ? ` — ${drill.source}: ${drill.label}` : ""}"`;
+    const banner = prefs.branding
+      ? [`"Trygc CRM HUB"`, `"${brandTitle}"`, `"Generated ${stamp} UTC"`, rangeLine, filterLine, `""`].join("\n")
+      : "";
+    const blob = new Blob([`${banner ? `${banner}\n` : ""}${head}\n${body}`], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -107,9 +141,9 @@ export function DataTable<T>({
 
   const exportPdf = () => {
     const esc = (s: unknown) => String(s ?? "").replace(/[&<>]/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[m] as string);
-    const head = visible.map((c) => `<th>${esc(c.header)}</th>`).join("");
-    const body = sorted
-      .map((r) => `<tr>${visible.map((c) => `<td>${esc(c.sortValue ? c.sortValue(r) : "")}</td>`).join("")}</tr>`)
+    const head = exportCols.map((c) => `<th>${esc(c.header)}</th>`).join("");
+    const body = exportRows
+      .map((r) => `<tr>${exportCols.map((c) => `<td>${esc(c.sortValue ? c.sortValue(r) : "")}</td>`).join("")}</tr>`)
       .join("");
     const win = window.open("", "_blank", "width=1100,height=800");
     if (!win) return;
@@ -128,9 +162,9 @@ export function DataTable<T>({
       footer{margin-top:18px;font-size:10px;color:#888}
       @media print{body{margin:14mm}}
     </style></head><body>
-      <header><img src="${window.location.origin}/favicon.png" alt="Trygc" /><div><div class="brand">Trygc</div><div class="sub">CRM HUB</div></div></header>
+      ${prefs.branding ? `<header><img src="${window.location.origin}/favicon.png" alt="Trygc" /><div><div class="brand">Trygc</div><div class="sub">CRM HUB</div></div></header>` : ""}
       <h1>${esc(brandTitle)}</h1>
-      <div class="meta">Generated ${esc(stamp)} UTC · ${sorted.length} records</div>
+      <div class="meta">Generated ${esc(stamp)} UTC · ${exportRows.length} records · ${bounds ? `${esc(bounds.from)} → ${esc(bounds.to)}` : "all time"}${prefs.applyFilters && drill ? ` · ${esc(drill.source)}: ${esc(drill.label)}` : ""}</div>
       <table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>
       <footer>Trygc CRM HUB — confidential internal report.</footer>
     </body></html>`);
@@ -189,15 +223,34 @@ export function DataTable<T>({
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button variant="outline" size="sm" onClick={exportCsv}>
-            <Download className="size-4" /> CSV
-          </Button>
-          <Button variant="outline" size="sm" onClick={exportPdf}>
-            <FileText className="size-4" /> PDF
-          </Button>
+          {canExport ? (
+            <>
+              <ExportPreferencesPanel compact />
+              <Button variant="outline" size="sm" onClick={exportCsv}>
+                <Download className="size-4" /> CSV
+              </Button>
+              <Button variant="outline" size="sm" onClick={exportPdf}>
+                <FileText className="size-4" /> PDF
+              </Button>
+            </>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs text-muted-foreground" title="Your role cannot download records">
+              <Lock className="size-3.5" /> Export restricted
+            </span>
+          )}
 
         </div>
       </div>
+
+      {drill ? (
+        <div className="flex flex-wrap items-center gap-2 rounded-md border border-primary/30 bg-brand-soft px-3 py-1.5 text-xs text-brand">
+          <span className="font-medium">{drill.source}:</span>
+          <span>{drill.label}</span>
+          <button onClick={() => setDrill(null)} className="inline-flex items-center gap-1 rounded px-1 py-0.5 hover:bg-background/60" aria-label="Clear chart filter">
+            <X className="size-3" /> Clear
+          </button>
+        </div>
+      ) : null}
 
       <div className="w-full overflow-x-auto rounded-xl border bg-card shadow-[var(--shadow-panel)]">
         <table className="w-full min-w-full border-collapse text-sm">
