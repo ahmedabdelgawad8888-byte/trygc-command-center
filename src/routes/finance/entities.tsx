@@ -4,7 +4,7 @@ import { ChartRow, BarChartCard, DonutChartCard, countBy, sumBy } from "@/compon
 import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { entityFinance } from "@/lib/derive";
-import { money, shortDate } from "@/lib/format";
+import { compactMoney, money, shortDate } from "@/lib/format";
 
 function Entities() {
   const { db } = useApp();
