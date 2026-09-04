@@ -67,8 +67,7 @@ export function BarChartCard({
           <CartesianGrid strokeDasharray="3 3" vertical={horizontal} horizontal={!horizontal} className="stroke-border" />
           <XAxis
             type={horizontal ? "number" : "category"}
-            {...(horizontal ? { tickFormatter: fmt } : { dataKey: "name" as const })}
-            interval={0}
+            {...(horizontal ? { tickFormatter: fmt, tickCount: 4, interval: "preserveStartEnd" as const } : { dataKey: "name" as const, interval: 0 as const })}
             {...AXIS}
           />
           <YAxis
