@@ -11,7 +11,7 @@ export function TrygcLogo({ collapsed }: { collapsed?: boolean }) {
       {collapsed ? null : (
         <div className="leading-tight">
           <div className="font-display text-base font-semibold tracking-tight">Trygc</div>
-          <div className="text-[10px] font-medium tracking-widest text-muted-foreground uppercase">Operations OS</div>
+          <div className="text-[10px] font-medium tracking-widest text-muted-foreground uppercase">CRM HUB</div>
         </div>
       )}
     </div>
