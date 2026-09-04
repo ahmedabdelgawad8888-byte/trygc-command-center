@@ -62,6 +62,38 @@ export function ExecDashboard() {
 
   const revenueByEntity = finance.map((f) => ({ name: f.entity.countryName, revenue: Math.round(f.revenueSAR), profit: Math.round(f.profitSAR) }));
 
+  const openInvoices = invoices.filter((i) => invoiceOutstanding(i) > 0 && i.status !== "Cancelled");
+  const ageingBuckets = [
+    { name: t("Current", "جارية"), min: -9999, max: 0 },
+    { name: "1–30", min: 1, max: 30 },
+    { name: "31–60", min: 31, max: 60 },
+    { name: "61–90", min: 61, max: 90 },
+    { name: "90+", min: 91, max: 99999 },
+  ].map((b) => ({
+    name: b.name,
+    value: Math.round(
+      openInvoices
+        .filter((i) => {
+          const d = daysBetween(i.dueDate);
+          return d >= b.min && d <= b.max;
+        })
+        .reduce((s, i) => s + toSAR(invoiceOutstanding(i), i.currency), 0),
+    ),
+  }));
+
+  const topClients = useMemo(() => {
+    const byClient = new Map<string, number>();
+    for (const i of invoices) {
+      if (["Draft", "Cancelled"].includes(i.status)) continue;
+      byClient.set(i.clientId, (byClient.get(i.clientId) ?? 0) + toSAR(i.amount, i.currency));
+    }
+    return [...byClient.entries()]
+      .map(([clientId, value]) => ({ name: db.clients.find((c) => c.id === clientId)?.name ?? clientId, value: Math.round(value) }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 6);
+  }, [invoices, db.clients]);
+
+
   const coverage = db.campaignInfluencers.filter((r) => campaigns.some((c) => c.id === r.campaignId));
   const coverageBreakdown = [
     { name: t("Verified", "موثّق"), value: coverage.filter((r) => ["Posting Coverage Verified", "Completed"].includes(r.stage)).length, fill: "var(--color-chart-2)" },
