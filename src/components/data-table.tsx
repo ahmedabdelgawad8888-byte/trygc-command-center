@@ -184,7 +184,7 @@ export function DataTable<T>({
     </body></html>`;
   };
 
-  const queueExport = (kind: ExportKindLocal) => {
+  const queueExport = (kind: "csv" | "pdf") => {
     auditExport(kind === "csv" ? "CSV" : "PDF");
     enqueue({
       title: brandTitle,
@@ -251,10 +251,10 @@ export function DataTable<T>({
           {canExport ? (
             <>
               <ExportPreferencesPanel compact />
-              <Button variant="outline" size="sm" onClick={exportCsv}>
+              <Button variant="outline" size="sm" onClick={() => queueExport("csv")}>
                 <Download className="size-4" /> CSV
               </Button>
-              <Button variant="outline" size="sm" onClick={exportPdf}>
+              <Button variant="outline" size="sm" onClick={() => queueExport("pdf")}>
                 <FileText className="size-4" /> PDF
               </Button>
             </>
