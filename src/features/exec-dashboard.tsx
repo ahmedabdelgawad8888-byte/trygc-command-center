@@ -21,7 +21,7 @@ import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { useExceptions } from "@/lib/use-exceptions";
 import { campaignHealth, campaignStats, entityFinance, invoiceOutstanding, isOverdue } from "@/lib/derive";
-import { compactMoney, money, num, shortDate, toSAR } from "@/lib/format";
+import { compactMoney, daysBetween, money, num, shortDate, toSAR } from "@/lib/format";
 import type { Exception } from "@/lib/derive";
 
 export function ExecDashboard() {
@@ -61,6 +61,38 @@ export function ExecDashboard() {
   }));
 
   const revenueByEntity = finance.map((f) => ({ name: f.entity.countryName, revenue: Math.round(f.revenueSAR), profit: Math.round(f.profitSAR) }));
+
+  const openInvoices = invoices.filter((i) => invoiceOutstanding(i) > 0 && i.status !== "Cancelled");
+  const ageingBuckets = [
+    { name: t("Current", "جارية"), min: -9999, max: 0 },
+    { name: "1–30", min: 1, max: 30 },
+    { name: "31–60", min: 31, max: 60 },
+    { name: "61–90", min: 61, max: 90 },
+    { name: "90+", min: 91, max: 99999 },
+  ].map((b) => ({
+    name: b.name,
+    value: Math.round(
+      openInvoices
+        .filter((i) => {
+          const d = daysBetween(i.dueDate);
+          return d >= b.min && d <= b.max;
+        })
+        .reduce((s, i) => s + toSAR(invoiceOutstanding(i), i.currency), 0),
+    ),
+  }));
+
+  const topClients = useMemo(() => {
+    const byClient = new Map<string, number>();
+    for (const i of invoices) {
+      if (["Draft", "Cancelled"].includes(i.status)) continue;
+      byClient.set(i.clientId, (byClient.get(i.clientId) ?? 0) + toSAR(i.amount, i.currency));
+    }
+    return [...byClient.entries()]
+      .map(([clientId, value]) => ({ name: db.clients.find((c) => c.id === clientId)?.name ?? clientId, value: Math.round(value) }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 6);
+  }, [invoices, db.clients]);
+
 
   const coverage = db.campaignInfluencers.filter((r) => campaigns.some((c) => c.id === r.campaignId));
   const coverageBreakdown = [
@@ -189,7 +221,8 @@ export function ExecDashboard() {
       </div>
 
       <div className="grid items-start gap-4 xl:grid-cols-3">
-        <Panel className="xl:col-span-2">
+        <div className="space-y-4 xl:col-span-2">
+        <Panel>
           <Section title={t("Pipeline value by stage (SAR)", "قيمة خط الفرص حسب المرحلة")} description={t("Open deal value in each stage of the funnel.", "قيمة الصفقات المفتوحة في كل مرحلة.")}>
             <div className="h-64 w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -204,6 +237,42 @@ export function ExecDashboard() {
             </div>
           </Section>
         </Panel>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          <Panel>
+            <Section title={t("Receivables ageing (SAR)", "أعمار الذمم المدينة")} description={t("Outstanding balance by days past due.", "الأرصدة القائمة حسب أيام التأخير.")}>
+              <div className="h-56 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={ageingBuckets} margin={{ left: 4, right: 8, top: 8 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-border" />
+                    <XAxis dataKey="name" tickLine={false} axisLine={false} fontSize={11} />
+                    <YAxis tickFormatter={(v: number) => compactMoney(v, "SAR")} tickLine={false} axisLine={false} fontSize={11} width={70} />
+                    <Tooltip cursor={{ fill: "var(--color-muted)" }} formatter={(v: number) => money(v, "SAR")} contentStyle={{ borderRadius: 10, fontSize: 12 }} />
+                    <RBar dataKey="value" name={t("Outstanding", "المستحق")} fill="var(--color-chart-2)" radius={[6, 6, 0, 0]} maxBarSize={34} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </Section>
+          </Panel>
+
+          <Panel>
+            <Section title={t("Top clients by billed value (SAR)", "أعلى العملاء بقيمة الفوترة")} description={t("Issued invoices consolidated to SAR.", "الفواتير الصادرة موحّدة بالريال.")}>
+              <div className="space-y-2.5">
+                {topClients.map((c) => (
+                  <div key={c.name} className="space-y-1">
+                    <div className="flex items-center justify-between gap-2 text-xs">
+                      <span className="truncate font-medium">{c.name}</span>
+                      <span className="num text-muted-foreground">{compactMoney(c.value, "SAR")}</span>
+                    </div>
+                    <Bar value={c.value} max={topClients[0]?.value ?? 1} tone="brand" />
+                  </div>
+                ))}
+              </div>
+            </Section>
+          </Panel>
+        </div>
+        </div>
+
 
 
         <Panel>
