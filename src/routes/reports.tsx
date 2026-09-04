@@ -16,7 +16,8 @@ import { compactMoney, money, num, pct, toSAR } from "@/lib/format";
 const CHART = ["var(--color-chart-1)", "var(--color-chart-2)", "var(--color-chart-3)", "var(--color-chart-4)", "var(--color-chart-5)"];
 
 function Reports() {
-  const { db, inScope, userName, clientName } = useApp();
+  const { db, inScope, userName, clientName, can } = useApp();
+  const confidential = can("reports.confidential");
   const { t } = useLang();
   const [tab, setTab] = useState("revenue");
 
