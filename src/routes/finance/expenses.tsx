@@ -7,6 +7,7 @@ import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { compactMoney, money, shortDate, toSAR } from "@/lib/format";
 import type { Expense } from "@/lib/types";
+import { BarChartCard, ChartRow, DonutChartCard, TrendChartCard, countBy, sumBy } from "@/components/charts";
 
 function Expenses() {
   const { db, inScope, entityName, campaignName, can, actions } = useApp();
@@ -40,6 +41,11 @@ function Expenses() {
         <Stat label={t("Pending approval", "بانتظار الاعتماد")} value={String(rows.filter((r) => r.status === "Pending Approval").length)} tone="warning" />
         <Stat label={t("Paid", "مدفوعة")} value={String(rows.filter((r) => r.status === "Paid").length)} tone="success" />
       </div>
+      <ChartRow>
+        <DonutChartCard title={t("Expenses by status", "المصروفات حسب الحالة")} data={countBy(rows, (r) => r.status)} />
+        <BarChartCard title={t("Spend by account (SAR)", "الإنفاق حسب الحساب")} horizontal data={sumBy(rows, (r) => r.accountCode, (r) => toSAR(r.amount, r.currency))} format={(v) => compactMoney(v, "SAR")} />
+        <BarChartCard title={t("Spend by entity (SAR)", "الإنفاق حسب الكيان")} data={sumBy(rows, (r) => entityName(r.entityId), (r) => toSAR(r.amount, r.currency))} format={(v) => compactMoney(v, "SAR")} />
+      </ChartRow>
       <Section title={t("Expense ledger", "سجل المصروفات")}>
         <DataTable rows={rows} columns={columns} rowKey={(r) => r.id} searchable={(r) => `${r.description} ${r.vendor} ${r.accountCode}`} exportName="trygc-expenses" pageSize={12} />
       </Section>

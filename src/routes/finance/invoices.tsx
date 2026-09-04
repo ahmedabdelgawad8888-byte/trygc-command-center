@@ -8,6 +8,7 @@ import { useLang } from "@/lib/i18n";
 import { invoiceOutstanding, isOverdue } from "@/lib/derive";
 import { compactMoney, money, shortDate, toSAR } from "@/lib/format";
 import type { Invoice } from "@/lib/types";
+import { BarChartCard, ChartRow, DonutChartCard, TrendChartCard, countBy, sumBy } from "@/components/charts";
 
 function Invoices() {
   const { db, inScope, clientName, entityName, campaignName, actions } = useApp();
@@ -43,6 +44,11 @@ function Invoices() {
         <Stat label={t("Overdue (SAR)", "المتأخر")} value={compactMoney(overdueSAR, "SAR")} tone="danger" />
         <Stat label={t("Fully paid", "مدفوعة بالكامل")} value={String(rows.filter((r) => invoiceOutstanding(r) === 0 && r.status !== "Draft").length)} tone="success" />
       </div>
+      <ChartRow>
+        <DonutChartCard title={t("Invoices by status", "الفواتير حسب الحالة")} data={countBy(rows, (r) => r.status)} />
+        <BarChartCard title={t("Billed by client (SAR)", "المفوتر حسب العميل")} horizontal data={sumBy(rows, (r) => clientName(r.clientId), (r) => toSAR(r.amount, r.currency))} format={(v) => compactMoney(v, "SAR")} />
+        <BarChartCard title={t("Outstanding by entity (SAR)", "المستحق حسب الكيان")} data={sumBy(rows, (r) => entityName(r.entityId), (r) => toSAR(invoiceOutstanding(r), r.currency))} format={(v) => compactMoney(v, "SAR")} />
+      </ChartRow>
       <Section title={t("Receivables ledger", "سجل الذمم")}>
         <DataTable rows={rows} columns={columns} rowKey={(r) => r.id} searchable={(r) => `${r.number} ${clientName(r.clientId)}`} exportName="trygc-invoices" pageSize={12} />
       </Section>

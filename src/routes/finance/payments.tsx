@@ -5,6 +5,7 @@ import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { compactMoney, money, shortDate, toSAR } from "@/lib/format";
 import type { Payment } from "@/lib/types";
+import { BarChartCard, ChartRow, DonutChartCard, TrendChartCard, countBy, sumBy } from "@/components/charts";
 
 function Payments() {
   const { db, inScope, entityName, clientName } = useApp();
@@ -36,6 +37,11 @@ function Payments() {
         <Stat label={t("Cash collected (SAR)", "النقد المحصل")} value={compactMoney(totalSAR, "SAR")} tone="success" />
         <Stat label={t("Bank transfers", "تحويلات بنكية")} value={String(rows.filter((r) => r.method === "Bank Transfer").length)} />
       </div>
+      <ChartRow>
+        <DonutChartCard title={t("Collections by method", "التحصيل حسب الوسيلة")} data={sumBy(rows, (r) => r.method, (r) => toSAR(r.amount, r.currency))} format={(v) => compactMoney(v, "SAR")} />
+        <BarChartCard title={t("Collections by entity (SAR)", "التحصيل حسب الكيان")} data={sumBy(rows, (r) => entityName(r.entityId), (r) => toSAR(r.amount, r.currency))} format={(v) => compactMoney(v, "SAR")} />
+        <TrendChartCard title={t("Cash received over time (SAR)", "النقد المحصل عبر الزمن")} data={sumBy([...rows].sort((a, b) => a.date.localeCompare(b.date)), (r) => shortDate(r.date), (r) => toSAR(r.amount, r.currency))} format={(v) => compactMoney(v, "SAR")} />
+      </ChartRow>
       <Section title={t("Payment register", "سجل المدفوعات")}>
         <DataTable rows={rows} columns={columns} rowKey={(r) => r.id} searchable={(r) => `${r.reference} ${invoice(r.invoiceId)?.number ?? ""}`} exportName="trygc-payments" pageSize={12} />
       </Section>

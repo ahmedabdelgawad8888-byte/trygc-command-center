@@ -2,8 +2,6 @@ import { useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 import { AlertTriangle, ArrowUpRight, BadgeCheck, Banknote, Megaphone, Target, Users } from "lucide-react";
 import {
-  Area,
-  AreaChart,
   Bar as RBar,
   BarChart,
   CartesianGrid,
@@ -15,6 +13,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+
 import { Button } from "@/components/ui/button";
 import { PageHeader, Panel, Pill, Section, Stat, HealthPill, Bar } from "@/components/kit";
 import { DataTable, type Column } from "@/components/data-table";
@@ -144,7 +143,7 @@ export function ExecDashboard() {
         <Stat label={t("Pending approvals", "الموافقات المعلقة")} value={num(pendingApprovals.length)} hint={t("Waiting on a decision", "بانتظار القرار")} tone="warning" />
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-3">
+      <div className="grid items-start gap-4 xl:grid-cols-3">
         <Panel className="xl:col-span-2">
           <Section title={t("Revenue and profit by entity (SAR)", "الإيرادات والأرباح حسب الكيان")} description={t("Consolidated at the locked FX rate for the period.", "موحّدة بسعر الصرف المثبت للفترة.")}>
             <div className="h-72 w-full">
@@ -189,28 +188,23 @@ export function ExecDashboard() {
         </Panel>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-3">
+      <div className="grid items-start gap-4 xl:grid-cols-3">
         <Panel className="xl:col-span-2">
-          <Section title={t("Pipeline value by stage (SAR)", "قيمة خط الفرص حسب المرحلة")}>
-            <div className="h-60 w-full">
+          <Section title={t("Pipeline value by stage (SAR)", "قيمة خط الفرص حسب المرحلة")} description={t("Open deal value in each stage of the funnel.", "قيمة الصفقات المفتوحة في كل مرحلة.")}>
+            <div className="h-64 w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={stageData} margin={{ left: 4, right: 4, top: 8 }}>
-                  <defs>
-                    <linearGradient id="pipe" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="var(--color-chart-1)" stopOpacity={0.5} />
-                      <stop offset="100%" stopColor="var(--color-chart-1)" stopOpacity={0.02} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-border" />
-                  <XAxis dataKey="stage" tickLine={false} axisLine={false} fontSize={11} />
-                  <YAxis tickFormatter={(v: number) => compactMoney(v, "SAR")} tickLine={false} axisLine={false} fontSize={11} width={78} />
-                  <Tooltip formatter={(v: number) => money(v, "SAR")} contentStyle={{ borderRadius: 10, fontSize: 12 }} />
-                  <Area type="monotone" dataKey="value" stroke="var(--color-chart-1)" strokeWidth={2} fill="url(#pipe)" />
-                </AreaChart>
+                <BarChart data={stageData} layout="vertical" margin={{ left: 4, right: 16, top: 4, bottom: 4 }} barCategoryGap={10}>
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} className="stroke-border" />
+                  <XAxis type="number" tickFormatter={(v: number) => compactMoney(v, "SAR")} tickLine={false} axisLine={false} fontSize={11} />
+                  <YAxis type="category" dataKey="stage" tickLine={false} axisLine={false} fontSize={11} width={92} />
+                  <Tooltip cursor={{ fill: "var(--color-muted)" }} formatter={(v: number) => money(v, "SAR")} contentStyle={{ borderRadius: 10, fontSize: 12 }} />
+                  <RBar dataKey="value" name={t("Pipeline value", "قيمة الفرص")} fill="var(--color-chart-1)" radius={[0, 6, 6, 0]} maxBarSize={22} />
+                </BarChart>
               </ResponsiveContainer>
             </div>
           </Section>
         </Panel>
+
 
         <Panel>
           <Section title={t("Campaign health", "صحة الحملات")} description={t("Delivery against target creators.", "التنفيذ مقابل العدد المستهدف.")}>
