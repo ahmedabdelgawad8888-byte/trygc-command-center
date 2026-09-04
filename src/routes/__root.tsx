@@ -92,15 +92,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "Trygc CRM HUB" },
       { property: "og:description", content: "CRM, campaign operations, community, finance and approvals for Trygc across Egypt and the GCC." },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: "/android-chrome-512x512.png" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:image", content: "/android-chrome-512x512.png" },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", href: "/trygc-logo.svg", type: "image/svg+xml" },
       { rel: "icon", href: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
       { rel: "icon", href: "/favicon-16x16.png", type: "image/png", sizes: "16x16" },
       { rel: "icon", href: "/favicon.png", type: "image/png", sizes: "64x64" },
