@@ -65,17 +65,20 @@ export function BarChartCard({
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} layout={horizontal ? "vertical" : "horizontal"} margin={{ left: 4, right: 12, top: 6, bottom: 4 }} barCategoryGap={horizontal ? 8 : 14}>
           <CartesianGrid strokeDasharray="3 3" vertical={horizontal} horizontal={!horizontal} className="stroke-border" />
-          {horizontal ? (
-            <>
-              <XAxis type="number" tickFormatter={fmt} {...AXIS} />
-              <YAxis type="category" dataKey="name" width={104} {...AXIS} />
-            </>
-          ) : (
-            <>
-              <XAxis dataKey="name" interval={0} {...AXIS} />
-              <YAxis tickFormatter={fmt} width={64} {...AXIS} />
-            </>
-          )}
+          <XAxis
+            type={horizontal ? "number" : "category"}
+            dataKey={horizontal ? undefined : "name"}
+            interval={0}
+            tickFormatter={horizontal ? fmt : undefined}
+            {...AXIS}
+          />
+          <YAxis
+            type={horizontal ? "category" : "number"}
+            dataKey={horizontal ? "name" : undefined}
+            width={horizontal ? 104 : 64}
+            tickFormatter={horizontal ? undefined : fmt}
+            {...AXIS}
+          />
           <Tooltip cursor={{ fill: "color-mix(in oklab, var(--color-muted) 60%, transparent)" }} formatter={(v: number) => fmt(v)} contentStyle={TOOLTIP} />
           <Bar dataKey="value" name={title} fill={PALETTE[0]} radius={horizontal ? [0, 6, 6, 0] : [6, 6, 0, 0]} maxBarSize={horizontal ? 20 : 44}>
             {colorful ? data.map((d, i) => <Cell key={d.name} fill={PALETTE[i % PALETTE.length]} />) : null}
