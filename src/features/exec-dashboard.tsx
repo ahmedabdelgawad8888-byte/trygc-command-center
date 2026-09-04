@@ -21,7 +21,7 @@ import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { useExceptions } from "@/lib/use-exceptions";
 import { campaignHealth, campaignStats, entityFinance, invoiceOutstanding, isOverdue } from "@/lib/derive";
-import { compactMoney, money, num, shortDate, toSAR } from "@/lib/format";
+import { compactMoney, daysBetween, money, num, shortDate, toSAR } from "@/lib/format";
 import type { Exception } from "@/lib/derive";
 
 export function ExecDashboard() {
