@@ -5,7 +5,7 @@ import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { num } from "@/lib/format";
 import type { Influencer } from "@/lib/types";
-import { BarChartCard, ChartRow, DonutChartCard, TrendChartCard, countBy, sumBy } from "@/components/charts";
+import { BarChartCard, ChartRow, ShareChartCard, TrendChartCard, countBy, sumBy } from "@/components/charts";
 
 function Directory() {
   const { db } = useApp();
@@ -40,7 +40,7 @@ function Directory() {
         <Stat label={t("Total audience", "إجمالي الجمهور")} value={num(rows.reduce((s, r) => s + r.followers, 0))} tone="orange" />
       </div>
       <ChartRow>
-        <DonutChartCard title={t("Creators by platform", "حسب المنصة")} data={countBy(rows, (r) => r.platform)} />
+        <ShareChartCard title={t("Creators by platform", "حسب المنصة")} data={countBy(rows, (r) => r.platform)} />
         <BarChartCard title={t("Creators by tier", "حسب الشريحة")} colorful data={countBy(rows, (r) => r.tier)} />
         <BarChartCard title={t("Reach by category", "الوصول حسب الفئة")} horizontal data={sumBy(rows, (r) => r.category, (r) => r.followers)} format={(v) => num(v)} />
       </ChartRow>

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader, Pill, Section, Stat } from "@/components/kit";
 import { DataTable, type Column } from "@/components/data-table";
-import { ChartRow, BarChartCard, DonutChartCard, countBy, sumBy } from "@/components/charts";
+import { ChartRow, BarChartCard, ShareChartCard, countBy, sumBy } from "@/components/charts";
 import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import type { ActivityEvent } from "@/lib/types";
@@ -34,7 +34,7 @@ function Audit() {
       </div>
       <ChartRow>
         <BarChartCard title={t("Events by module", "الأحداث حسب الوحدة")} data={countBy(db.activities, (a) => a.module)} horizontal colorful />
-        <DonutChartCard title={t("Events by action", "الأحداث حسب الإجراء")} data={countBy(db.activities, (a) => a.action)} />
+        <ShareChartCard title={t("Events by action", "الأحداث حسب الإجراء")} data={countBy(db.activities, (a) => a.action)} />
         <BarChartCard title={t("Events by actor", "الأحداث حسب المنفذ")} data={countBy(db.activities, (a) => userName(a.actorId))} horizontal />
       </ChartRow>
       <Section title={t("Event log", "سجل الأحداث")}>

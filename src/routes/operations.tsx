@@ -10,7 +10,7 @@ import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { daysBetween, shortDate } from "@/lib/format";
 import type { QueueItem } from "@/lib/types";
-import { BarChartCard, ChartRow, DonutChartCard, TrendChartCard, countBy, sumBy } from "@/components/charts";
+import { BarChartCard, ChartRow, ShareChartCard, TrendChartCard, countBy, sumBy } from "@/components/charts";
 
 const QUEUES: QueueItem["queue"][] = ["Onboarding", "Coordination", "WhatsApp", "Visits", "Posting Coverage", "QA"];
 
@@ -58,7 +58,7 @@ function Operations() {
         <Stat label={t("Completed", "مكتملة")} value={String(rows.filter((r) => r.status === "Done").length)} tone="success" />
       </div>
       <ChartRow>
-        <DonutChartCard title={t("Items by queue", "البنود حسب الطابور")} data={countBy(rows, (r) => r.queue)} />
+        <ShareChartCard title={t("Items by queue", "البنود حسب الطابور")} data={countBy(rows, (r) => r.queue)} />
         <BarChartCard title={t("Items by status", "حسب الحالة")} colorful data={countBy(rows, (r) => r.status)} />
         <BarChartCard title={t("Workload by owner", "العبء حسب المسؤول")} horizontal data={countBy(rows, (r) => userName(r.ownerId))} />
       </ChartRow>

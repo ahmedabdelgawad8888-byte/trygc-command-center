@@ -5,7 +5,7 @@ import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { shortDate } from "@/lib/format";
 import type { Deal } from "@/lib/types";
-import { BarChartCard, ChartRow, DonutChartCard, TrendChartCard, countBy, sumBy } from "@/components/charts";
+import { BarChartCard, ChartRow, ShareChartCard, TrendChartCard, countBy, sumBy } from "@/components/charts";
 
 function Activities() {
   const { db, inScope, clientName, userName, entityName } = useApp();
@@ -35,7 +35,7 @@ function Activities() {
         <Stat label={t("Overdue", "متأخرة")} value={String(rows.filter((r) => r.nextActionDate < "2026-09-04").length)} tone="danger" />
       </div>
       <ChartRow cols={2}>
-        <DonutChartCard title={t("Activities by stage", "الأنشطة حسب المرحلة")} data={countBy(rows, (r) => r.stage)} />
+        <ShareChartCard title={t("Activities by stage", "الأنشطة حسب المرحلة")} data={countBy(rows, (r) => r.stage)} />
         <BarChartCard title={t("Activities by owner", "الأنشطة حسب المسؤول")} horizontal data={countBy(rows, (r) => userName(r.ownerId))} />
       </ChartRow>
       <Section title={t("Upcoming touchpoints", "نقاط التواصل القادمة")}>

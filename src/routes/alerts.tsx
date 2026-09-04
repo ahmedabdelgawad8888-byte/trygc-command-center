@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHeader, Pill, Section, Stat } from "@/components/kit";
 import { DataTable, type Column } from "@/components/data-table";
-import { ChartRow, BarChartCard, DonutChartCard, countBy, sumBy } from "@/components/charts";
+import { ChartRow, BarChartCard, ShareChartCard, countBy, sumBy } from "@/components/charts";
 import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { useExceptions } from "@/lib/use-exceptions";
@@ -41,7 +41,7 @@ function Alerts() {
         <Stat label={t("Medium", "متوسطة")} value={String(bySeverity("Medium"))} />
       </div>
       <ChartRow>
-        <DonutChartCard title={t("Exceptions by severity", "الاستثناءات حسب الخطورة")} data={countBy(rows, (r) => r.severity)} />
+        <ShareChartCard title={t("Exceptions by severity", "الاستثناءات حسب الخطورة")} data={countBy(rows, (r) => r.severity)} />
         <BarChartCard title={t("Exceptions by category", "الاستثناءات حسب الفئة")} data={countBy(rows, (r) => r.category)} horizontal colorful />
         <BarChartCard title={t("Exceptions by owner", "الاستثناءات حسب المسؤول")} data={countBy(rows, (r) => userName(r.ownerId))} horizontal />
       </ChartRow>

@@ -5,9 +5,8 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
+  LabelList,
   Legend,
-  Pie,
-  PieChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -127,43 +126,86 @@ export function BarChartCard({
   );
 }
 
-export function DonutChartCard({
+/** Categorical breakdown as a ranked horizontal bar — easier to compare than a donut. */
+export function ShareChartCard({
   title,
   description,
   data,
   format,
+  limit = 8,
   className,
 }: {
   title: string;
   description?: string | undefined;
   data: ChartPoint[];
   format?: ((v: number) => string) | undefined;
+  limit?: number;
   className?: string | undefined;
 }) {
   const fmt = format ?? ((v: number) => String(v));
-  const rows = data.filter((d) => d.value > 0);
   const { pick, dim } = useChartDrill(title);
+
+  const ranked = data.filter((d) => d.value > 0).sort((a, b) => b.value - a.value);
+  const rows = ranked.length > limit
+    ? [...ranked.slice(0, limit - 1), { name: "Other", value: ranked.slice(limit - 1).reduce((n, d) => n + d.value, 0) }]
+    : ranked;
+
+  const total = rows.reduce((n, d) => n + d.value, 0);
+  const max = rows.reduce((n, d) => Math.max(n, d.value), 0);
+  const label = (v: number) => (total > 0 ? `${fmt(v)}  ·  ${Math.round((v / total) * 100)}%` : fmt(v));
+
+  if (!rows.length) {
+    return (
+      <Frame title={title} description={description} className={className}>
+        <div className="flex h-full items-center justify-center text-xs text-muted-foreground">No data</div>
+      </Frame>
+    );
+  }
+
   return (
     <Frame title={title} description={description} className={className}>
       <ResponsiveContainer width="100%" height="100%">
-        <PieChart>
-          <Pie
-            data={rows}
+        <BarChart data={rows} layout="vertical" margin={{ left: 0, right: 8, top: 4, bottom: 4 }} barCategoryGap={7}>
+          {/* Headroom on the axis so the value label never clips off the panel. */}
+          <XAxis type="number" domain={[0, max * 1.35]} hide />
+          <YAxis type="category" dataKey="name" width={112} interval={0} {...AXIS} />
+          <Tooltip
+            cursor={CHART_CURSOR}
+            formatter={(v: number) => label(v)}
+            contentStyle={TOOLTIP}
+            labelStyle={CHART_TOOLTIP_LABEL}
+          />
+          <Bar
             dataKey="value"
-            nameKey="name"
-            innerRadius={48}
-            outerRadius={72}
-            paddingAngle={3}
+            name={title}
+            radius={[0, 6, 6, 0]}
+            maxBarSize={18}
             className="cursor-pointer"
             onClick={(d: { name?: string | number }) => pick(d?.name)}
           >
             {rows.map((d, i) => (
-              <Cell key={d.name} fill={PALETTE[i % PALETTE.length]} fillOpacity={dim(d.name)} onClick={() => pick(d.name)} />
+              <Cell key={d.name} fill={PALETTE[i % PALETTE.length]} fillOpacity={dim(d.name)} />
             ))}
-          </Pie>
-          <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={CHART_LEGEND} />
-          <Tooltip formatter={(v: number) => fmt(v)} contentStyle={TOOLTIP} labelStyle={CHART_TOOLTIP_LABEL} />
-        </PieChart>
+            {/* Custom label node: recharts' built-in label wraps to the bar width, which breaks on short bars. */}
+            <LabelList
+              dataKey="value"
+              content={(props: unknown) => {
+                const { x, y, width, height, value } = props as { x: number; y: number; width: number; height: number; value: number };
+                return (
+                  <text
+                    x={x + width + 6}
+                    y={y + height / 2}
+                    dominantBaseline="central"
+                    fill="var(--color-muted-foreground)"
+                    fontSize={11}
+                  >
+                    {label(value)}
+                  </text>
+                );
+              }}
+            />
+          </Bar>
+        </BarChart>
       </ResponsiveContainer>
     </Frame>
   );

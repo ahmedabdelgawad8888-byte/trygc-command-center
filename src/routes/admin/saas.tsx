@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { PageHeader, Pill, Section, Stat } from "@/components/kit";
 import { DataTable, type Column } from "@/components/data-table";
-import { ChartRow, BarChartCard, DonutChartCard, countBy, sumBy } from "@/components/charts";
+import { ChartRow, BarChartCard, ShareChartCard, countBy, sumBy } from "@/components/charts";
 import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { shortDate } from "@/lib/format";
@@ -49,8 +49,8 @@ function Saas() {
       </div>
       <ChartRow>
         <BarChartCard title={t("Seats by application", "المقاعد حسب التطبيق")} data={countBy(db.saasSeats, (s) => s.app)} horizontal colorful />
-        <DonutChartCard title={t("Seat status", "حالة المقاعد")} data={countBy(db.saasSeats, (s) => s.status)} />
-        <DonutChartCard title={t("Licence mix", "مزيج التراخيص")} data={countBy(db.saasSeats, (s) => s.license)} />
+        <ShareChartCard title={t("Seat status", "حالة المقاعد")} data={countBy(db.saasSeats, (s) => s.status)} />
+        <ShareChartCard title={t("Licence mix", "مزيج التراخيص")} data={countBy(db.saasSeats, (s) => s.license)} />
       </ChartRow>
       <Section title={t("Seat register", "سجل المقاعد")}>
         <DataTable rows={db.saasSeats} columns={columns} rowKey={(r) => r.id} searchable={(r) => `${r.app} ${r.corporateEmail} ${userName(r.userId)}`} exportName="trygc-saas-seats" pageSize={12} />

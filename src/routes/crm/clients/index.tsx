@@ -5,7 +5,7 @@ import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { compactMoney, money, shortDate, toSAR } from "@/lib/format";
 import type { Client } from "@/lib/types";
-import { BarChartCard, ChartRow, DonutChartCard, TrendChartCard, countBy, sumBy } from "@/components/charts";
+import { BarChartCard, ChartRow, ShareChartCard, TrendChartCard, countBy, sumBy } from "@/components/charts";
 
 function Clients() {
   const { db, inScope, userName, entityName } = useApp();
@@ -41,7 +41,7 @@ function Clients() {
         <Stat label={t("Lifetime revenue (SAR)", "الإيراد التراكمي")} value={compactMoney(ltvSAR, "SAR")} tone="orange" />
       </div>
       <ChartRow>
-        <DonutChartCard title={t("Clients by status", "العملاء حسب الحالة")} data={countBy(rows, (r) => r.status)} />
+        <ShareChartCard title={t("Clients by status", "العملاء حسب الحالة")} data={countBy(rows, (r) => r.status)} />
         <BarChartCard title={t("Lifetime revenue by industry (SAR)", "الإيراد التراكمي حسب القطاع")} horizontal data={sumBy(rows, (r) => r.industry, (r) => toSAR(r.lifetimeRevenue, r.currency))} format={(v) => compactMoney(v, "SAR")} />
         <BarChartCard title={t("Clients by entity", "العملاء حسب الكيان")} colorful data={countBy(rows, (r) => entityName(r.entityId))} />
       </ChartRow>

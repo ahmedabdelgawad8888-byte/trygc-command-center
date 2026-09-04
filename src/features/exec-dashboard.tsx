@@ -5,9 +5,6 @@ import {
   Bar as RBar,
   BarChart,
   CartesianGrid,
-  Cell,
-  Pie,
-  PieChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -331,27 +328,36 @@ export function ExecDashboard() {
 
         <Panel>
           <Section title={t("Posting Coverage status", "حالة تغطية النشر")} description={t("Every creator deliverable in scope.", "كل مخرجات صناع المحتوى ضمن النطاق.")}>
-            <div className="h-72 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={coverageBreakdown} dataKey="value" nameKey="name" innerRadius={58} outerRadius={92} paddingAngle={3}>
+            {(() => {
+              const total = coverageBreakdown.reduce((n, d) => n + d.value, 0);
+              const pct = (v: number) => (total > 0 ? (v / total) * 100 : 0);
+              return (
+                <div className="flex h-72 flex-col justify-center gap-6">
+                  <div>
+                    <div className="num text-3xl font-semibold tracking-tight">{num(total)}</div>
+                    <div className="mt-0.5 text-xs text-muted-foreground">{t("Deliverables in scope", "مخرجات ضمن النطاق")}</div>
+                  </div>
+
+                  {/* Share of total as one stacked bar — proportions stay comparable at a glance. */}
+                  <div className="flex h-3 w-full overflow-hidden rounded-full bg-muted">
                     {coverageBreakdown.map((d) => (
-                      <Cell key={d.name} fill={d.fill} />
+                      <div key={d.name} style={{ width: `${pct(d.value)}%`, background: d.fill }} title={`${d.name}: ${d.value}`} />
                     ))}
-                  </Pie>
-                  <Tooltip contentStyle={CHART_TOOLTIP} labelStyle={CHART_TOOLTIP_LABEL} />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="space-y-1.5">
-              {coverageBreakdown.map((d) => (
-                <div key={d.name} className="flex items-center gap-2 text-xs">
-                  <span className="size-2 rounded-full" style={{ background: d.fill }} />
-                  <span className="text-muted-foreground">{d.name}</span>
-                  <span className="num ms-auto font-semibold">{d.value}</span>
+                  </div>
+
+                  <div className="space-y-2.5">
+                    {coverageBreakdown.map((d) => (
+                      <div key={d.name} className="flex items-center gap-2 text-xs">
+                        <span className="size-2 shrink-0 rounded-full" style={{ background: d.fill }} />
+                        <span className="text-muted-foreground">{d.name}</span>
+                        <span className="num ms-auto font-semibold">{d.value}</span>
+                        <span className="num w-10 text-end text-muted-foreground">{Math.round(pct(d.value))}%</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              ))}
-            </div>
+              );
+            })()}
           </Section>
         </Panel>
       </div>

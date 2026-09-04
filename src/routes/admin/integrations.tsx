@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AlertTriangle } from "lucide-react";
 import { PageHeader, Panel, Pill, Section, Stat, Field } from "@/components/kit";
-import { ChartRow, BarChartCard, DonutChartCard, countBy, sumBy } from "@/components/charts";
+import { ChartRow, BarChartCard, ShareChartCard, countBy, sumBy } from "@/components/charts";
 import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { shortDate } from "@/lib/format";
@@ -27,9 +27,9 @@ function Integrations() {
         <Stat label={t("Failing", "معطلة")} value={String(db.integrations.filter((i) => i.status === "Error" || i.webhook === "Failing" || i.auth === "Expired").length)} tone="danger" />
       </div>
       <ChartRow>
-        <DonutChartCard title={t("Connection status", "حالة الاتصال")} data={countBy(db.integrations, (i) => i.status)} />
-        <DonutChartCard title={t("Webhook health", "صحة الويب هوك")} data={countBy(db.integrations, (i) => i.webhook)} />
-        <DonutChartCard title={t("Credential state", "حالة الاعتماد")} data={countBy(db.integrations, (i) => i.auth)} />
+        <ShareChartCard title={t("Connection status", "حالة الاتصال")} data={countBy(db.integrations, (i) => i.status)} />
+        <ShareChartCard title={t("Webhook health", "صحة الويب هوك")} data={countBy(db.integrations, (i) => i.webhook)} />
+        <ShareChartCard title={t("Credential state", "حالة الاعتماد")} data={countBy(db.integrations, (i) => i.auth)} />
       </ChartRow>
       <Section title={t("Connections", "الاتصالات")}>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">

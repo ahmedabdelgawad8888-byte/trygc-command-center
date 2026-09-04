@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { PageHeader, Section, Stat, StatusPill } from "@/components/kit";
 import { DataTable, type Column } from "@/components/data-table";
-import { ChartRow, BarChartCard, DonutChartCard, countBy, sumBy } from "@/components/charts";
+import { ChartRow, BarChartCard, ShareChartCard, countBy, sumBy } from "@/components/charts";
 import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { money, shortDate } from "@/lib/format";
@@ -59,7 +59,7 @@ function Approvals() {
         <Stat label={t("Rejected", "مرفوضة")} value={String(count("Rejected"))} tone="danger" />
       </div>
       <ChartRow>
-        <DonutChartCard title={t("Approvals by status", "الموافقات حسب الحالة")} data={countBy(rows, (r) => r.status)} />
+        <ShareChartCard title={t("Approvals by status", "الموافقات حسب الحالة")} data={countBy(rows, (r) => r.status)} />
         <BarChartCard title={t("Approvals by type", "الموافقات حسب النوع")} data={countBy(rows, (r) => r.type)} horizontal colorful />
         <BarChartCard title={t("Pending value by entity", "القيمة المعلقة حسب الكيان")} data={sumBy(rows.filter((r) => r.status === "Pending"), (r) => entityName(r.entityId), (r) => r.value ?? 0)} horizontal format={(v) => money(v, "SAR")} />
       </ChartRow>

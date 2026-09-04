@@ -7,7 +7,7 @@ import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { money, shortDate } from "@/lib/format";
 import type { CampaignInfluencer } from "@/lib/types";
-import { BarChartCard, ChartRow, DonutChartCard, TrendChartCard, countBy, sumBy } from "@/components/charts";
+import { BarChartCard, ChartRow, ShareChartCard, TrendChartCard, countBy, sumBy } from "@/components/charts";
 
 const OUTREACH: CampaignInfluencer["stage"][] = ["Target", "Prospected", "Contacted", "Interested", "Confirmation Requested", "Confirmed", "No Response"];
 
@@ -43,7 +43,7 @@ function Community() {
         <Stat label={t("Replacements needed", "بدلاء مطلوبون")} value={String(rows.filter((r) => r.stage === "Replacement Required").length)} tone="warning" />
       </div>
       <ChartRow cols={2}>
-        <DonutChartCard title={t("Creator relationships by stage", "العلاقات حسب المرحلة")} data={countBy(rows, (r) => r.stage)} />
+        <ShareChartCard title={t("Creator relationships by stage", "العلاقات حسب المرحلة")} data={countBy(rows, (r) => r.stage)} />
         <BarChartCard title={t("Engagements per campaign", "المشاركات لكل حملة")} horizontal data={countBy(rows, (r) => campaignName(r.campaignId))} />
       </ChartRow>
       <Panel>

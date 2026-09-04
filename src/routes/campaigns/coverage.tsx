@@ -7,7 +7,7 @@ import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { money, shortDate } from "@/lib/format";
 import type { CampaignInfluencer } from "@/lib/types";
-import { BarChartCard, ChartRow, DonutChartCard, TrendChartCard, countBy, sumBy } from "@/components/charts";
+import { BarChartCard, ChartRow, ShareChartCard, TrendChartCard, countBy, sumBy } from "@/components/charts";
 
 const OPEN = ["Scheduled", "Visited", "Posting Coverage Received", "Missing Posting Coverage", "Missed Visit", "Replacement Required"];
 
@@ -52,7 +52,7 @@ function Coverage() {
         <Stat label={t("Missing / missed", "ناقصة أو فائتة")} value={String(count((r) => ["Missing Posting Coverage", "Missed Visit", "Replacement Required"].includes(r.stage)))} tone="danger" />
       </div>
       <ChartRow cols={2}>
-        <DonutChartCard title={t("Coverage by stage", "التغطية حسب المرحلة")} data={countBy(rows, (r) => r.stage)} />
+        <ShareChartCard title={t("Coverage by stage", "التغطية حسب المرحلة")} data={countBy(rows, (r) => r.stage)} />
         <BarChartCard title={t("Creators per campaign", "صناع المحتوى لكل حملة")} horizontal data={countBy(rows, (r) => campaignName(r.campaignId))} />
       </ChartRow>
       <Section title={t("Open coverage items", "بنود التغطية المفتوحة")} description={t("Sorted work for the community and quality teams.", "عمل مرتب لفرق المجتمع والجودة.")}>

@@ -10,7 +10,7 @@ import { useLang } from "@/lib/i18n";
 import { dealIsStuck } from "@/lib/derive";
 import { ageLabel, compactMoney, money, shortDate, toSAR } from "@/lib/format";
 import type { Deal, LeadStage } from "@/lib/types";
-import { BarChartCard, ChartRow, DonutChartCard, TrendChartCard, countBy, sumBy } from "@/components/charts";
+import { BarChartCard, ChartRow, ShareChartCard, TrendChartCard, countBy, sumBy } from "@/components/charts";
 
 const STAGES: LeadStage[] = ["New Lead", "Contacted", "Qualified", "Discovery", "Proposal", "Negotiation", "Won", "Lost"];
 
@@ -63,7 +63,7 @@ export function DealsPage({ leadsOnly = false }: { leadsOnly?: boolean }) {
         <Stat label={t("Won", "مكسوبة")} value={String(rows.filter((d) => d.stage === "Won").length)} tone="success" />
       </div>
       <ChartRow>
-        <DonutChartCard title={t("Deals by stage", "الصفقات حسب المرحلة")} data={countBy(rows, (r) => r.stage)} />
+        <ShareChartCard title={t("Deals by stage", "الصفقات حسب المرحلة")} data={countBy(rows, (r) => r.stage)} />
         <BarChartCard title={t("Pipeline by owner (SAR)", "خط الفرص حسب المسؤول")} horizontal data={sumBy(rows, (r) => userName(r.ownerId), (r) => toSAR(r.value, r.currency))} format={(v) => compactMoney(v, "SAR")} />
         <BarChartCard title={t("Deals by source", "الصفقات حسب المصدر")} colorful data={countBy(rows, (r) => r.source)} />
       </ChartRow>

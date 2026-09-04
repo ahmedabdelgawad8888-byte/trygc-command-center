@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader, Pill, Section } from "@/components/kit";
 import { DataTable, type Column } from "@/components/data-table";
-import { ChartRow, BarChartCard, DonutChartCard, countBy, sumBy } from "@/components/charts";
+import { ChartRow, BarChartCard, ShareChartCard, countBy, sumBy } from "@/components/charts";
 import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import type { ActivityEvent } from "@/lib/types";
@@ -29,7 +29,7 @@ function ActivityFeed() {
       />
       <ChartRow>
         <BarChartCard title={t("Activity by module", "النشاط حسب الوحدة")} data={countBy(rows, (a) => a.module)} horizontal colorful />
-        <DonutChartCard title={t("Activity by action", "النشاط حسب الإجراء")} data={countBy(rows, (a) => a.action)} />
+        <ShareChartCard title={t("Activity by action", "النشاط حسب الإجراء")} data={countBy(rows, (a) => a.action)} />
         <BarChartCard title={t("Activity by person", "النشاط حسب الشخص")} data={countBy(rows, (a) => userName(a.actorId))} horizontal />
       </ChartRow>
       <Section title={t("All events", "كل الأحداث")}>
