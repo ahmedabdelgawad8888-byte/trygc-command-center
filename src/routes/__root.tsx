@@ -14,6 +14,8 @@ import { AppProvider } from "../lib/store";
 import { LangProvider } from "../lib/i18n";
 import { ExportPrefsProvider } from "../lib/export-prefs";
 import { DrillProvider } from "../lib/drill";
+import { ExportQueueProvider } from "../lib/export-queue";
+import { DrillPanel } from "../components/drill-panel";
 import { AppShell } from "../components/layout/app-shell";
 import { Toaster } from "../components/ui/sonner";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -134,13 +136,16 @@ function RootComponent() {
       <LangProvider>
         <AppProvider>
           <ExportPrefsProvider>
+            <ExportQueueProvider>
             <DrillProvider>
               <AppShell>
                 {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
                 <Outlet />
               </AppShell>
+              <DrillPanel />
               <Toaster position="top-right" richColors />
             </DrillProvider>
+            </ExportQueueProvider>
           </ExportPrefsProvider>
         </AppProvider>
       </LangProvider>
