@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { PageHeader, Pill, Section, Stat, StatusPill } from "@/components/kit";
 import { DataTable, type Column } from "@/components/data-table";
+import { ChartRow, BarChartCard, DonutChartCard, countBy, sumBy } from "@/components/charts";
 import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { shortDate } from "@/lib/format";
@@ -93,6 +94,11 @@ function Coa() {
         <Stat label={t("Pending requests", "طلبات معلقة")} value={String(db.coaRequests.filter((r) => r.status === "Pending Review").length)} tone="warning" />
         <Stat label={t("Rejected requests", "طلبات مرفوضة")} value={String(db.coaRequests.filter((r) => r.status === "Rejected").length)} tone="danger" />
       </div>
+      <ChartRow>
+        <DonutChartCard title={t("Accounts by type", "الحسابات حسب النوع")} data={countBy(db.accounts, (a) => a.type)} />
+        <BarChartCard title={t("Accounts by category", "الحسابات حسب الفئة")} data={countBy(db.accounts, (a) => a.category)} horizontal colorful />
+        <DonutChartCard title={t("Request status", "حالة الطلبات")} data={countBy(db.coaRequests, (r) => r.status)} />
+      </ChartRow>
       <Section title={t("Account requests", "طلبات الحسابات")}>
         <DataTable rows={db.coaRequests} columns={requestCols} rowKey={(r) => r.id} searchable={(r) => `${r.code} ${r.name}`} exportName="trygc-coa-requests" pageSize={8} />
       </Section>

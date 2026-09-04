@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader, Pill, Section, Stat } from "@/components/kit";
 import { DataTable, type Column } from "@/components/data-table";
+import { ChartRow, BarChartCard, DonutChartCard, countBy, sumBy } from "@/components/charts";
 import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { fxRates } from "@/lib/data/seed";
@@ -34,6 +35,10 @@ function Fx() {
         <Stat label={t("Locked periods", "فترات مقفلة")} value={String(fxRates.filter((r) => r.locked).length)} tone="success" />
         <Stat label={t("Missing rates", "أسعار ناقصة")} value={String(missing.length)} tone={missing.length ? "danger" : "default"} />
       </div>
+      <ChartRow cols={2}>
+        <BarChartCard title={t("Rate to SAR by currency", "السعر مقابل الريال")} data={fxRates.map((r) => ({ name: r.currency, value: r.toSAR }))} colorful format={(v) => v.toFixed(3)} />
+        <DonutChartCard title={t("Locked vs open periods", "فترات مقفلة مقابل مفتوحة")} data={countBy(fxRates, (r) => (r.locked ? "Locked" : "Open"))} />
+      </ChartRow>
       <Section title={t("Rate table", "جدول الأسعار")}>
         <DataTable rows={fxRates} columns={columns} rowKey={(r) => r.currency} searchable={(r) => `${r.currency} ${r.source}`} exportName="trygc-fx" pageSize={10} />
       </Section>

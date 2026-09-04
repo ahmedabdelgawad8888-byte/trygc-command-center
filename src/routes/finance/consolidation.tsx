@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader, Panel, Section, Stat } from "@/components/kit";
 import { DataTable, type Column } from "@/components/data-table";
+import { ChartRow, BarChartCard, DonutChartCard, countBy, sumBy } from "@/components/charts";
 import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { entityFinance, type EntityFinance } from "@/lib/derive";
@@ -38,6 +39,11 @@ function Consolidation() {
         <Stat label={t("Payables", "الذمم الدائنة")} value={compactMoney(total.ap, "SAR")} />
       </div>
       <Panel>
+        <ChartRow>
+          <BarChartCard title={t("Revenue contribution (SAR)", "مساهمة الإيراد")} data={rows.map((f) => ({ name: f.entity.name, value: f.revenueSAR }))} horizontal colorful format={(v) => compactMoney(v, "SAR")} />
+          <BarChartCard title={t("Expenses by entity (SAR)", "المصروفات حسب الكيان")} data={rows.map((f) => ({ name: f.entity.name, value: f.expensesSAR }))} horizontal format={(v) => compactMoney(v, "SAR")} />
+          <BarChartCard title={t("Receivables by entity (SAR)", "الذمم حسب الكيان")} data={rows.map((f) => ({ name: f.entity.name, value: f.arSAR }))} horizontal format={(v) => compactMoney(v, "SAR")} />
+        </ChartRow>
         <Section title={t("Consolidated statement (SAR)", "القائمة الموحدة")}>
           <DataTable rows={rows} columns={columns} rowKey={(r) => r.entity.id} searchable={(r) => r.entity.name} exportName="trygc-consolidation" pageSize={10} />
         </Section>

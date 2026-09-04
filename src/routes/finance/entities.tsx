@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader, Panel, Pill, Section, Stat, Field } from "@/components/kit";
+import { ChartRow, BarChartCard, DonutChartCard, countBy, sumBy } from "@/components/charts";
 import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { entityFinance } from "@/lib/derive";
@@ -21,6 +22,11 @@ function Entities() {
         <Stat label={t("Active", "نشطة")} value={String(db.entities.filter((e) => e.status === "active").length)} tone="success" />
         <Stat label={t("Onboarding / planned", "قيد التأسيس")} value={String(db.entities.filter((e) => e.status !== "active").length)} tone="orange" />
       </div>
+      <ChartRow>
+        <BarChartCard title={t("Revenue by entity (SAR)", "الإيراد حسب الكيان")} data={fin.map((f) => ({ name: f.entity.name, value: f.revenueSAR }))} horizontal colorful format={(v) => compactMoney(v, "SAR")} />
+        <BarChartCard title={t("Profit by entity (SAR)", "الربح حسب الكيان")} data={fin.map((f) => ({ name: f.entity.name, value: f.profitSAR }))} horizontal format={(v) => compactMoney(v, "SAR")} />
+        <DonutChartCard title={t("Entities by currency", "الكيانات حسب العملة")} data={countBy(db.entities, (e) => e.currency)} />
+      </ChartRow>
       <Section title={t("Operating companies", "الشركات العاملة")}>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {fin.map((f) => (
