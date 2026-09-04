@@ -36,6 +36,7 @@ import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { shortDate } from "@/lib/format";
+import { ExportQueueButton } from "@/components/export-queue-panel";
 
 function useTheme() {
   const [dark, setDark] = useState(false);
@@ -216,6 +217,8 @@ export function AppShell({ children }: { children: ReactNode }) {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
+
+            <ExportQueueButton />
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
