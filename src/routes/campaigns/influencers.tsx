@@ -5,6 +5,7 @@ import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { num } from "@/lib/format";
 import type { Influencer } from "@/lib/types";
+import { BarChartCard, ChartRow, DonutChartCard, TrendChartCard, countBy, sumBy } from "@/components/charts";
 
 function Directory() {
   const { db } = useApp();
@@ -38,6 +39,11 @@ function Directory() {
         <Stat label={t("Blacklisted", "محظورون")} value={String(rows.filter((r) => r.blacklisted).length)} tone="danger" />
         <Stat label={t("Total audience", "إجمالي الجمهور")} value={num(rows.reduce((s, r) => s + r.followers, 0))} tone="orange" />
       </div>
+      <ChartRow>
+        <DonutChartCard title={t("Creators by platform", "حسب المنصة")} data={countBy(rows, (r) => r.platform)} />
+        <BarChartCard title={t("Creators by tier", "حسب الشريحة")} colorful data={countBy(rows, (r) => r.tier)} />
+        <BarChartCard title={t("Reach by category", "الوصول حسب الفئة")} horizontal data={sumBy(rows, (r) => r.category, (r) => r.followers)} format={(v) => num(v)} />
+      </ChartRow>
       <Section title={t("Directory", "الدليل")}>
         <DataTable rows={rows} columns={columns} rowKey={(r) => r.id} searchable={(r) => `${r.name} ${r.handle} ${r.category} ${r.platform}`} exportName="trygc-influencers" pageSize={12} />
       </Section>

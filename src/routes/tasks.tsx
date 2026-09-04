@@ -9,6 +9,7 @@ import { useLang } from "@/lib/i18n";
 import { taskIsOverdue } from "@/lib/derive";
 import { shortDate } from "@/lib/format";
 import type { Task, TaskStatus } from "@/lib/types";
+import { BarChartCard, ChartRow, DonutChartCard, TrendChartCard, countBy, sumBy } from "@/components/charts";
 
 const COLUMNS: TaskStatus[] = ["Backlog", "To Do", "In Progress", "Blocked", "Pending Approval", "Done"];
 
@@ -42,6 +43,11 @@ function Tasks() {
         <Stat label={t("Blocked", "متوقفة")} value={String(rows.filter((r) => r.status === "Blocked").length)} tone="warning" />
         <Stat label={t("Completed", "مكتملة")} value={String(rows.filter((r) => r.status === "Done").length)} tone="success" />
       </div>
+      <ChartRow>
+        <DonutChartCard title={t("Tasks by status", "المهام حسب الحالة")} data={countBy(rows, (r) => r.status)} />
+        <BarChartCard title={t("Tasks by department", "حسب القسم")} horizontal data={countBy(rows, (r) => r.department)} />
+        <BarChartCard title={t("Tasks by priority", "حسب الأولوية")} colorful data={countBy(rows, (r) => r.priority)} />
+      </ChartRow>
       <Tabs defaultValue="board">
         <TabsList>
           <TabsTrigger value="board">{t("Kanban", "لوحة كانبان")}</TabsTrigger>

@@ -8,6 +8,7 @@ import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { shortDate } from "@/lib/format";
 import type { CorporateFile } from "@/lib/types";
+import { BarChartCard, ChartRow, DonutChartCard, TrendChartCard, countBy, sumBy } from "@/components/charts";
 
 const icon = (kind: CorporateFile["kind"]) => {
   if (kind === "folder") return <Folder className="size-4 text-brand" />;
@@ -48,6 +49,10 @@ function Files() {
         <Stat label={t("Client-linked", "مرتبط بعميل")} value={String(all.filter((f) => f.clientId).length)} tone="success" />
         <Stat label={t("Campaign-linked", "مرتبط بحملة")} value={String(all.filter((f) => f.campaignId).length)} tone="orange" />
       </div>
+      <ChartRow cols={2}>
+        <DonutChartCard title={t("Files by type", "الملفات حسب النوع")} data={countBy(rows, (r) => r.kind)} />
+        <BarChartCard title={t("Files by entity", "الملفات حسب الكيان")} horizontal data={countBy(rows, (r) => entityName(r.entityId))} />
+      </ChartRow>
       <Section title={t("Vault", "الخزانة")} description={t("Filter by folder, then search inside it.", "رشّح حسب المجلد ثم ابحث داخله.")}>
         <div className="mb-3 flex flex-wrap items-center gap-1.5">
           <Button size="sm" variant={path === "/" ? "default" : "outline"} onClick={() => setPath("/")}>{t("All files", "كل الملفات")}</Button>

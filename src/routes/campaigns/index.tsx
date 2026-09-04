@@ -6,6 +6,7 @@ import { useLang } from "@/lib/i18n";
 import { campaignHealth, campaignStats } from "@/lib/derive";
 import { compactMoney, money, shortDate, toSAR } from "@/lib/format";
 import type { Campaign } from "@/lib/types";
+import { BarChartCard, ChartRow, DonutChartCard, TrendChartCard, countBy, sumBy } from "@/components/charts";
 
 function CampaignCenter() {
   const { db, inScope, clientName, userName, entityName } = useApp();
@@ -67,6 +68,11 @@ function CampaignCenter() {
         <Stat label={t("Missing Posting Coverage", "تغطية نشر ناقصة")} value={String(allStats.miss)} tone="danger" />
         <Stat label={t("Committed budget (SAR)", "الميزانية الملتزمة")} value={compactMoney(budgetSAR, "SAR")} tone="orange" />
       </div>
+      <ChartRow>
+        <DonutChartCard title={t("Campaigns by status", "الحملات حسب الحالة")} data={countBy(rows, (r) => r.status)} />
+        <BarChartCard title={t("Budget by client (SAR)", "الميزانية حسب العميل")} horizontal data={sumBy(rows, (r) => clientName(r.clientId), (r) => toSAR(r.budget, r.currency))} format={(v) => compactMoney(v, "SAR")} />
+        <BarChartCard title={t("Target creators by city", "المستهدف حسب المدينة")} colorful data={sumBy(rows, (r) => r.city, (r) => r.targetInfluencers)} />
+      </ChartRow>
       <Section title={t("Campaign portfolio", "محفظة الحملات")}>
         <DataTable rows={rows} columns={columns} rowKey={(r) => r.id} searchable={(r) => `${r.name} ${clientName(r.clientId)} ${r.city}`} onRowClick={(r) => navigate({ to: "/campaigns/$campaignId", params: { campaignId: r.id } })} exportName="trygc-campaigns" pageSize={12} />
       </Section>
