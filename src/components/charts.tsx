@@ -142,7 +142,7 @@ export function DonutChartCard({
             onClick={(d: { name?: string | number }) => pick(d?.name)}
           >
             {rows.map((d, i) => (
-              <Cell key={d.name} fill={PALETTE[i % PALETTE.length]} fillOpacity={dim(d.name)} />
+              <Cell key={d.name} fill={PALETTE[i % PALETTE.length]} fillOpacity={dim(d.name)} onClick={() => pick(d.name)} />
             ))}
           </Pie>
           <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: 11 }} />
