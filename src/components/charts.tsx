@@ -14,6 +14,7 @@ import {
   YAxis,
 } from "recharts";
 import { Panel } from "@/components/kit";
+import { useDrill } from "@/lib/drill";
 import { cn } from "@/lib/utils";
 
 export type ChartPoint = { name: string; value: number };
@@ -29,6 +30,19 @@ const PALETTE = [
 
 const AXIS = { tickLine: false, axisLine: false, fontSize: 11 } as const;
 const TOOLTIP = { borderRadius: 10, fontSize: 12, border: "1px solid var(--color-border)", background: "var(--color-card)" } as const;
+
+/** Click-through: selecting a segment filters the records table on the same page. */
+function useChartDrill(title: string) {
+  const { drill, setDrill } = useDrill();
+  const active = drill && drill.source === title ? drill.label : null;
+  const pick = (name?: string | number) => {
+    const label = String(name ?? "").trim();
+    if (!label) return;
+    setDrill(active === label ? null : { label, source: title });
+  };
+  const dim = (name: string) => (active && active !== name ? 0.28 : 1);
+  return { active, pick, dim };
+}
 
 function Frame({ title, description, children, className }: { title: string; description?: string | undefined; children: React.ReactNode; className?: string | undefined }) {
   return (
@@ -60,6 +74,7 @@ export function BarChartCard({
   className?: string | undefined;
 }) {
   const fmt = format ?? ((v: number) => String(v));
+  const { pick, dim } = useChartDrill(title);
   return (
     <Frame title={title} description={description} className={className}>
       <ResponsiveContainer width="100%" height="100%">
@@ -77,8 +92,18 @@ export function BarChartCard({
             {...AXIS}
           />
           <Tooltip cursor={{ fill: "color-mix(in oklab, var(--color-muted) 60%, transparent)" }} formatter={(v: number) => fmt(v)} contentStyle={TOOLTIP} />
-          <Bar dataKey="value" name={title} fill={PALETTE[0]} radius={horizontal ? [0, 6, 6, 0] : [6, 6, 0, 0]} maxBarSize={horizontal ? 20 : 44}>
-            {colorful ? data.map((d, i) => <Cell key={d.name} fill={PALETTE[i % PALETTE.length]} />) : null}
+          <Bar
+            dataKey="value"
+            name={title}
+            fill={PALETTE[0]}
+            radius={horizontal ? [0, 6, 6, 0] : [6, 6, 0, 0]}
+            maxBarSize={horizontal ? 20 : 44}
+            className="cursor-pointer"
+            onClick={(d: { name?: string | number }) => pick(d?.name)}
+          >
+            {data.map((d, i) => (
+              <Cell key={d.name} fill={colorful ? PALETTE[i % PALETTE.length] : PALETTE[0]} fillOpacity={dim(d.name)} />
+            ))}
           </Bar>
         </BarChart>
       </ResponsiveContainer>
@@ -101,13 +126,23 @@ export function DonutChartCard({
 }) {
   const fmt = format ?? ((v: number) => String(v));
   const rows = data.filter((d) => d.value > 0);
+  const { pick, dim } = useChartDrill(title);
   return (
     <Frame title={title} description={description} className={className}>
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
-          <Pie data={rows} dataKey="value" nameKey="name" innerRadius={48} outerRadius={72} paddingAngle={3}>
+          <Pie
+            data={rows}
+            dataKey="value"
+            nameKey="name"
+            innerRadius={48}
+            outerRadius={72}
+            paddingAngle={3}
+            className="cursor-pointer"
+            onClick={(d: { name?: string | number }) => pick(d?.name)}
+          >
             {rows.map((d, i) => (
-              <Cell key={d.name} fill={PALETTE[i % PALETTE.length]} />
+              <Cell key={d.name} fill={PALETTE[i % PALETTE.length]} fillOpacity={dim(d.name)} onClick={() => pick(d.name)} />
             ))}
           </Pie>
           <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: 11 }} />
@@ -133,10 +168,11 @@ export function TrendChartCard({
 }) {
   const fmt = format ?? ((v: number) => String(v));
   const id = `grad-${title.replace(/\W/g, "")}`;
+  const { pick } = useChartDrill(title);
   return (
     <Frame title={title} description={description} className={className}>
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={data} margin={{ left: 4, right: 12, top: 6, bottom: 4 }}>
+        <AreaChart data={data} margin={{ left: 4, right: 12, top: 6, bottom: 4 }} className="cursor-pointer" onClick={(e: { activeLabel?: string | number }) => pick(e?.activeLabel)}>
           <defs>
             <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor={PALETTE[0]} stopOpacity={0.45} />

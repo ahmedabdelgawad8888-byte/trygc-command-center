@@ -94,7 +94,7 @@ interface Ctx {
   setScope: (s: Scope) => void;
   currentUser: User;
   setCurrentUserId: (id: string) => void;
-  can: (perm: "coa.write" | "finance.approve" | "admin" | "assign") => boolean;
+  can: (perm: "coa.write" | "finance.approve" | "admin" | "assign" | "export" | "reports.confidential") => boolean;
   inScope: <T extends { entityId: string }>(rows: T[]) => T[];
   userName: (id?: string) => string;
   entityName: (id: string) => string;
@@ -176,6 +176,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (perm === "finance.approve") return r === "Group Finance" || r === "Executive Management";
       if (perm === "admin") return r === "IT Admin";
       if (perm === "assign") return ["Operations Manager", "Queue Manager", "Community Manager", "Sales Manager"].includes(r);
+      if (perm === "export")
+        return !["Viewer", "Community Specialist", "Operations Specialist", "Quality"].includes(r);
+      if (perm === "reports.confidential")
+        return ["Executive Management", "Group Finance", "Branch Accountant"].includes(r);
       return false;
     };
 

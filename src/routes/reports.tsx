@@ -5,6 +5,8 @@ import { Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveCo
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader, Panel, Pill, Section, Stat } from "@/components/kit";
+import { ExportPreferencesPanel } from "@/components/export-preferences";
+import { Lock } from "lucide-react";
 import { DataTable, type Column } from "@/components/data-table";
 import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
@@ -14,7 +16,8 @@ import { compactMoney, money, num, pct, toSAR } from "@/lib/format";
 const CHART = ["var(--color-chart-1)", "var(--color-chart-2)", "var(--color-chart-3)", "var(--color-chart-4)", "var(--color-chart-5)"];
 
 function Reports() {
-  const { db, inScope, userName, clientName } = useApp();
+  const { db, inScope, userName, clientName, can } = useApp();
+  const confidential = can("reports.confidential");
   const { t } = useLang();
   const [tab, setTab] = useState("revenue");
 
@@ -105,7 +108,7 @@ function Reports() {
       <PageHeader
         title={t("Reports", "التقارير")}
         subtitle={t("Every figure is computed from live records — no static charts. Export any view for board packs.", "كل رقم محسوب من السجلات الحية — لا رسوم ثابتة. صدّر أي عرض لملفات مجلس الإدارة.")}
-        actions={<Button variant="outline" onClick={() => toast.success(t("Report scheduled", "تمت جدولة التقرير"), { description: t("Weekly board pack will be emailed every Sunday 08:00 AST.", "سيُرسل ملخص المجلس كل أحد 8:00 صباحاً.") })}>{t("Schedule board pack", "جدولة ملخص المجلس")}</Button>}
+        actions={<><ExportPreferencesPanel /><Button variant="outline" onClick={() => toast.success(t("Report scheduled", "تمت جدولة التقرير"), { description: t("Weekly board pack will be emailed every Sunday 08:00 AST.", "سيُرسل ملخص المجلس كل أحد 8:00 صباحاً.") })}>{t("Schedule board pack", "جدولة ملخص المجلس")}</Button></>}
       />
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <Stat label={t("Group revenue (SAR)", "إيرادات المجموعة")} value={compactMoney(entityRows.reduce((s, e) => s + e.revenueSAR, 0), "SAR")} tone="brand" />
@@ -172,9 +175,19 @@ function Reports() {
         </TabsContent>
 
         <TabsContent value="clients" className="mt-4">
+          {!confidential ? (
+            <Panel className="flex items-center gap-3 text-sm text-muted-foreground">
+              <Lock className="size-4" />
+              {t(
+                "Client profitability and exposure is confidential. Ask Group Finance or Executive Management for access.",
+                "ربحية العملاء والانكشاف بيانات سرية. اطلب الصلاحية من المالية أو الإدارة التنفيذية.",
+              )}
+            </Panel>
+          ) : (
           <Section title={t("Client revenue & exposure", "إيرادات العملاء والانكشاف")}>
             <DataTable rows={clientRows} columns={clientCols} rowKey={(r) => r.client.id} searchable={(r) => r.client.name} exportName="trygc-client-report" pageSize={10} />
           </Section>
+          )}
         </TabsContent>
       </Tabs>
     </div>
