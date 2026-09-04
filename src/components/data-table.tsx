@@ -110,6 +110,21 @@ export function DataTable<T>({
   const current = Math.min(page, pageCount - 1);
   const pageRows = sorted.slice(current * pageSize, current * pageSize + pageSize);
 
+  // Feed the right-side drill-down panel with the currently filtered records.
+  useEffect(() => {
+    if (!drill) {
+      registerPanel(null);
+      return;
+    }
+    registerPanel({
+      title: exportName.replace(/^trygc-?/, "").replace(/[-_]/g, " ").replace(/\b\w/g, (m) => m.toUpperCase()),
+      headers: visible.slice(0, 4).map((c) => c.header),
+      rows: sorted.slice(0, 50).map((r) => visible.slice(0, 4).map((c) => String(c.sortValue ? c.sortValue(r) : ""))),
+      total: sorted.length,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [drill, sorted]);
+
   const brandTitle = exportName.replace(/^trygc-?/, "").replace(/[-_]/g, " ").replace(/\b\w/g, (m) => m.toUpperCase()) || "Export";
   const stamp = new Date().toISOString().slice(0, 16).replace("T", " ");
   const fileBase = `trygc-crm-hub-${exportName.replace(/^trygc-?/, "")}`;
@@ -269,8 +284,16 @@ export function DataTable<T>({
 
       {drill ? (
         <div className="flex flex-wrap items-center gap-2 rounded-md border border-primary/30 bg-brand-soft px-3 py-1.5 text-xs text-brand">
-          <span className="font-medium">{drill.source}:</span>
-          <span>{drill.label}</span>
+          {trail.map((d, i) => (
+            <span key={`${d.source}-${d.label}`} className="flex items-center gap-1">
+              {i > 0 ? <span className="opacity-50">/</span> : null}
+              <span className="font-medium">{d.source}:</span>
+              <span>{d.label}</span>
+            </span>
+          ))}
+          <button onClick={() => setPanelOpen(true)} className="inline-flex items-center gap-1 rounded px-1 py-0.5 hover:bg-background/60">
+            <PanelRightOpen className="size-3" /> Open panel
+          </button>
           <button onClick={() => setDrill(null)} className="inline-flex items-center gap-1 rounded px-1 py-0.5 hover:bg-background/60" aria-label="Clear chart filter">
             <X className="size-3" /> Clear
           </button>
