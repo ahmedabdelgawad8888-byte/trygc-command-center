@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader, Panel, Pill, Section, Stat, Field } from "@/components/kit";
+import { ChartRow, BarChartCard, DonutChartCard, countBy, sumBy } from "@/components/charts";
 import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { entityFinance } from "@/lib/derive";
-import { money, shortDate } from "@/lib/format";
+import { compactMoney, money, shortDate } from "@/lib/format";
 
 function Entities() {
   const { db } = useApp();
@@ -21,6 +22,11 @@ function Entities() {
         <Stat label={t("Active", "نشطة")} value={String(db.entities.filter((e) => e.status === "active").length)} tone="success" />
         <Stat label={t("Onboarding / planned", "قيد التأسيس")} value={String(db.entities.filter((e) => e.status !== "active").length)} tone="orange" />
       </div>
+      <ChartRow>
+        <BarChartCard title={t("Revenue by entity (SAR)", "الإيراد حسب الكيان")} data={fin.map((f) => ({ name: f.entity.name, value: f.revenueSAR }))} horizontal colorful format={(v) => compactMoney(v, "SAR")} />
+        <BarChartCard title={t("Profit by entity (SAR)", "الربح حسب الكيان")} data={fin.map((f) => ({ name: f.entity.name, value: f.profitSAR }))} horizontal format={(v) => compactMoney(v, "SAR")} />
+        <DonutChartCard title={t("Entities by currency", "الكيانات حسب العملة")} data={countBy(db.entities, (e) => e.currency)} />
+      </ChartRow>
       <Section title={t("Operating companies", "الشركات العاملة")}>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {fin.map((f) => (
@@ -52,9 +58,9 @@ function Entities() {
 export const Route = createFileRoute("/finance/entities")({
   head: () => ({
     meta: [
-      { title: "Entities | Trygc Operations OS" },
+      { title: "Entities | Trygc CRM HUB" },
       { name: "description", content: "Trygc operating companies across Saudi Arabia, Egypt, UAE, Kuwait, Qatar and Bahrain with currency and tax details." },
-      { property: "og:title", content: "Entities | Trygc Operations OS" },
+      { property: "og:title", content: "Entities | Trygc CRM HUB" },
       { property: "og:description", content: "Operating companies with currency, fiscal calendar, tax registration and local results." },
     ],
   }),

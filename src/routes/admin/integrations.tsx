@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AlertTriangle } from "lucide-react";
 import { PageHeader, Panel, Pill, Section, Stat, Field } from "@/components/kit";
+import { ChartRow, BarChartCard, DonutChartCard, countBy, sumBy } from "@/components/charts";
 import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { shortDate } from "@/lib/format";
@@ -25,6 +26,11 @@ function Integrations() {
         <Stat label={t("Need attention", "تحتاج انتباهاً")} value={String(db.integrations.filter((i) => i.status === "Needs Configuration" || i.status === "Pending Support").length)} tone="warning" />
         <Stat label={t("Failing", "معطلة")} value={String(db.integrations.filter((i) => i.status === "Error" || i.webhook === "Failing" || i.auth === "Expired").length)} tone="danger" />
       </div>
+      <ChartRow>
+        <DonutChartCard title={t("Connection status", "حالة الاتصال")} data={countBy(db.integrations, (i) => i.status)} />
+        <DonutChartCard title={t("Webhook health", "صحة الويب هوك")} data={countBy(db.integrations, (i) => i.webhook)} />
+        <DonutChartCard title={t("Credential state", "حالة الاعتماد")} data={countBy(db.integrations, (i) => i.auth)} />
+      </ChartRow>
       <Section title={t("Connections", "الاتصالات")}>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {db.integrations.map((i) => (
@@ -58,9 +64,9 @@ function Integrations() {
 export const Route = createFileRoute("/admin/integrations")({
   head: () => ({
     meta: [
-      { title: "Integrations | Trygc Operations OS" },
+      { title: "Integrations | Trygc CRM HUB" },
       { name: "description", content: "Honest connection status for every Trygc integration including webhook health and credential validity." },
-      { property: "og:title", content: "Integrations | Trygc Operations OS" },
+      { property: "og:title", content: "Integrations | Trygc CRM HUB" },
       { property: "og:description", content: "Live, misconfigured and failing integrations at a glance." },
     ],
   }),

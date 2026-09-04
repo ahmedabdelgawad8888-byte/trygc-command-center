@@ -63,9 +63,9 @@ function Clients() {
 export const Route = createFileRoute("/crm/clients/")({
   head: () => ({
     meta: [
-      { title: "Clients | Trygc Operations OS" },
+      { title: "Clients | Trygc CRM HUB" },
       { name: "description", content: "Trygc client book with account owners, status, satisfaction and lifetime revenue by entity." },
-      { property: "og:title", content: "Clients | Trygc Operations OS" },
+      { property: "og:title", content: "Clients | Trygc CRM HUB" },
       { property: "og:description", content: "Client book with owners, status, satisfaction and lifetime revenue." },
     ],
   }),

@@ -87,9 +87,9 @@ function FinanceCenter() {
 export const Route = createFileRoute("/finance/")({
   head: () => ({
     meta: [
-      { title: "Finance Command Center | Trygc Operations OS" },
+      { title: "Finance Command Center | Trygc CRM HUB" },
       { name: "description", content: "Revenue, expenses, receivables and cash by entity in local currency and consolidated to SAR." },
-      { property: "og:title", content: "Finance Command Center | Trygc Operations OS" },
+      { property: "og:title", content: "Finance Command Center | Trygc CRM HUB" },
       { property: "og:description", content: "Multi-entity revenue, expenses, receivables and cash consolidated in SAR." },
     ],
   }),

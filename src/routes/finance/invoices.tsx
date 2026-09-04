@@ -59,9 +59,9 @@ function Invoices() {
 export const Route = createFileRoute("/finance/invoices")({
   head: () => ({
     meta: [
-      { title: "Invoices & Receivables | Trygc Operations OS" },
+      { title: "Invoices & Receivables | Trygc CRM HUB" },
       { name: "description", content: "Multi-entity invoice ledger with ageing, outstanding balances in local currency and SAR, and overdue flags." },
-      { property: "og:title", content: "Invoices & Receivables | Trygc Operations OS" },
+      { property: "og:title", content: "Invoices & Receivables | Trygc CRM HUB" },
       { property: "og:description", content: "Invoice ledger with ageing and outstanding balances by entity." },
     ],
   }),

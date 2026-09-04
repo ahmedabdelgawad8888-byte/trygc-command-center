@@ -56,9 +56,9 @@ function Expenses() {
 export const Route = createFileRoute("/finance/expenses")({
   head: () => ({
     meta: [
-      { title: "Expenses & Payables | Trygc Operations OS" },
+      { title: "Expenses & Payables | Trygc CRM HUB" },
       { name: "description", content: "Expense ledger booked to controlled accounts with approval status by entity and campaign." },
-      { property: "og:title", content: "Expenses & Payables | Trygc Operations OS" },
+      { property: "og:title", content: "Expenses & Payables | Trygc CRM HUB" },
       { property: "og:description", content: "Costs by account, entity and campaign with approval status." },
     ],
   }),

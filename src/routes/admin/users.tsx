@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { PageHeader, Pill, Section, Stat } from "@/components/kit";
 import { DataTable, type Column } from "@/components/data-table";
+import { ChartRow, BarChartCard, DonutChartCard, countBy, sumBy } from "@/components/charts";
 import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { shortDate } from "@/lib/format";
@@ -45,6 +46,11 @@ function Users() {
         <Stat label={t("Group-wide access", "وصول لكل المجموعة")} value={String(db.users.filter((u) => u.scope === "group").length)} tone="orange" />
         <Stat label={t("Suspended / offboarding", "معلق أو مغادر")} value={String(db.users.filter((u) => u.status !== "active").length)} tone="danger" />
       </div>
+      <ChartRow>
+        <DonutChartCard title={t("Users by role", "المستخدمون حسب الدور")} data={countBy(db.users, (u) => u.role)} />
+        <BarChartCard title={t("Users by department", "المستخدمون حسب القسم")} data={countBy(db.users, (u) => u.department)} horizontal colorful />
+        <DonutChartCard title={t("Access status", "حالة الوصول")} data={countBy(db.users, (u) => u.status)} />
+      </ChartRow>
       <Section title={t("Directory", "الدليل")}>
         <DataTable rows={db.users} columns={columns} rowKey={(r) => r.id} searchable={(r) => `${r.name} ${r.email} ${r.role}`} exportName="trygc-users" pageSize={12} />
       </Section>
@@ -55,9 +61,9 @@ function Users() {
 export const Route = createFileRoute("/admin/users")({
   head: () => ({
     meta: [
-      { title: "Users | Trygc Operations OS" },
+      { title: "Users | Trygc CRM HUB" },
       { name: "description", content: "User directory with roles, entity data scope, access status and last login across Trygc." },
-      { property: "og:title", content: "Users | Trygc Operations OS" },
+      { property: "og:title", content: "Users | Trygc CRM HUB" },
       { property: "og:description", content: "Roles, data scope and access status for every Trygc user." },
     ],
   }),

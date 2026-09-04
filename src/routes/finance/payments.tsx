@@ -52,9 +52,9 @@ function Payments() {
 export const Route = createFileRoute("/finance/payments")({
   head: () => ({
     meta: [
-      { title: "Payments | Trygc Operations OS" },
+      { title: "Payments | Trygc CRM HUB" },
       { name: "description", content: "Payment register showing cash received against invoices in local currency and SAR." },
-      { property: "og:title", content: "Payments | Trygc Operations OS" },
+      { property: "og:title", content: "Payments | Trygc CRM HUB" },
       { property: "og:description", content: "Cash received against invoices, by entity and method." },
     ],
   }),

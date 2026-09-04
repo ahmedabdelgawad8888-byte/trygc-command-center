@@ -71,9 +71,9 @@ function Files() {
 export const Route = createFileRoute("/files")({
   head: () => ({
     meta: [
-      { title: "Corporate Files | Trygc Operations OS" },
+      { title: "Corporate Files | Trygc CRM HUB" },
       { name: "description", content: "Structured document vault where every file is linked to an entity, client or campaign with role-based access." },
-      { property: "og:title", content: "Corporate Files | Trygc Operations OS" },
+      { property: "og:title", content: "Corporate Files | Trygc CRM HUB" },
       { property: "og:description", content: "Structured vault linking documents to entities, clients and campaigns." },
     ],
   }),

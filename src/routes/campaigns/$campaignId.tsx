@@ -222,9 +222,9 @@ function CampaignDetail() {
 export const Route = createFileRoute("/campaigns/$campaignId")({
   head: () => ({
     meta: [
-      { title: "Campaign Detail | Trygc Operations OS" },
+      { title: "Campaign Detail | Trygc CRM HUB" },
       { name: "description", content: "Creator workflow, Posting Coverage status, brief, operations queue and campaign finance in one record." },
-      { property: "og:title", content: "Campaign Detail | Trygc Operations OS" },
+      { property: "og:title", content: "Campaign Detail | Trygc CRM HUB" },
       { property: "og:description", content: "Creator workflow, coverage status, operations and finance for a single campaign." },
     ],
   }),

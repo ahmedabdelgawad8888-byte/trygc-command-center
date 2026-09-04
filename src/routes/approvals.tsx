@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { PageHeader, Section, Stat, StatusPill } from "@/components/kit";
 import { DataTable, type Column } from "@/components/data-table";
+import { ChartRow, BarChartCard, DonutChartCard, countBy, sumBy } from "@/components/charts";
 import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { money, shortDate } from "@/lib/format";
@@ -57,6 +58,11 @@ function Approvals() {
         <Stat label={t("Returned", "مُرجعة")} value={String(count("Returned"))} />
         <Stat label={t("Rejected", "مرفوضة")} value={String(count("Rejected"))} tone="danger" />
       </div>
+      <ChartRow>
+        <DonutChartCard title={t("Approvals by status", "الموافقات حسب الحالة")} data={countBy(rows, (r) => r.status)} />
+        <BarChartCard title={t("Approvals by type", "الموافقات حسب النوع")} data={countBy(rows, (r) => r.type)} horizontal colorful />
+        <BarChartCard title={t("Pending value by entity", "القيمة المعلقة حسب الكيان")} data={sumBy(rows.filter((r) => r.status === "Pending"), (r) => entityName(r.entityId), (r) => r.value ?? 0)} horizontal format={(v) => money(v, "SAR")} />
+      </ChartRow>
       <Section title={t("Approval inbox", "صندوق الموافقات")}>
         <DataTable rows={rows} columns={columns} rowKey={(r) => r.id} searchable={(r) => `${r.title} ${r.type}`} exportName="trygc-approvals" pageSize={12} />
       </Section>
@@ -67,9 +73,9 @@ function Approvals() {
 export const Route = createFileRoute("/approvals")({
   head: () => ({
     meta: [
-      { title: "Approvals | Trygc Operations OS" },
+      { title: "Approvals | Trygc CRM HUB" },
       { name: "description", content: "Approve, return or reject finance, campaign, access and chart-of-accounts requests from one inbox." },
-      { property: "og:title", content: "Approvals | Trygc Operations OS" },
+      { property: "og:title", content: "Approvals | Trygc CRM HUB" },
       { property: "og:description", content: "One approval inbox across finance, campaigns, access and governance." },
     ],
   }),

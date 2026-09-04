@@ -83,9 +83,9 @@ function CampaignCenter() {
 export const Route = createFileRoute("/campaigns/")({
   head: () => ({
     meta: [
-      { title: "Campaign Command Center | Trygc Operations OS" },
+      { title: "Campaign Command Center | Trygc CRM HUB" },
       { name: "description", content: "Delivery position, health, budgets and Posting Coverage gaps for every Trygc influencer campaign." },
-      { property: "og:title", content: "Campaign Command Center | Trygc Operations OS" },
+      { property: "og:title", content: "Campaign Command Center | Trygc CRM HUB" },
       { property: "og:description", content: "Campaign health, delivery progress and Posting Coverage gaps in one place." },
     ],
   }),

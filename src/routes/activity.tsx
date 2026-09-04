@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader, Pill, Section } from "@/components/kit";
 import { DataTable, type Column } from "@/components/data-table";
+import { ChartRow, BarChartCard, DonutChartCard, countBy, sumBy } from "@/components/charts";
 import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import type { ActivityEvent } from "@/lib/types";
@@ -26,6 +27,11 @@ function ActivityFeed() {
         title={t("Activity Feed", "سجل النشاط")}
         subtitle={t("Immutable history of every state change made in the system, with actor, timestamp and before/after values.", "سجل غير قابل للتعديل لكل تغيير في النظام، مع المستخدم والوقت والقيم قبل وبعد.")}
       />
+      <ChartRow>
+        <BarChartCard title={t("Activity by module", "النشاط حسب الوحدة")} data={countBy(rows, (a) => a.module)} horizontal colorful />
+        <DonutChartCard title={t("Activity by action", "النشاط حسب الإجراء")} data={countBy(rows, (a) => a.action)} />
+        <BarChartCard title={t("Activity by person", "النشاط حسب الشخص")} data={countBy(rows, (a) => userName(a.actorId))} horizontal />
+      </ChartRow>
       <Section title={t("All events", "كل الأحداث")}>
         <DataTable rows={rows} columns={columns} rowKey={(r) => r.id} searchable={(r) => `${r.action} ${r.recordLabel} ${r.module}`} exportName="trygc-activity" pageSize={20} />
       </Section>
@@ -36,9 +42,9 @@ function ActivityFeed() {
 export const Route = createFileRoute("/activity")({
   head: () => ({
     meta: [
-      { title: "Activity Feed | Trygc Operations OS" },
+      { title: "Activity Feed | Trygc CRM HUB" },
       { name: "description", content: "Immutable audit history of every change across CRM, campaigns, operations and finance." },
-      { property: "og:title", content: "Activity Feed | Trygc Operations OS" },
+      { property: "og:title", content: "Activity Feed | Trygc CRM HUB" },
       { property: "og:description", content: "Who changed what, when, and from which value to which value." },
     ],
   }),

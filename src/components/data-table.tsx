@@ -1,5 +1,5 @@
 import { useMemo, useState, type ReactNode } from "react";
-import { ArrowDown, ArrowUp, ChevronsUpDown, Download, Search, Settings2 } from "lucide-react";
+import { ArrowDown, ArrowUp, ChevronsUpDown, Download, FileText, Search, Settings2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -79,6 +79,10 @@ export function DataTable<T>({
   const current = Math.min(page, pageCount - 1);
   const pageRows = sorted.slice(current * pageSize, current * pageSize + pageSize);
 
+  const brandTitle = exportName.replace(/^trygc-?/, "").replace(/[-_]/g, " ").replace(/\b\w/g, (m) => m.toUpperCase()) || "Export";
+  const stamp = new Date().toISOString().slice(0, 16).replace("T", " ");
+  const fileBase = `trygc-crm-hub-${exportName.replace(/^trygc-?/, "")}`;
+
   const exportCsv = () => {
     const head = visible.map((c) => `"${c.header}"`).join(",");
     const body = sorted
@@ -91,14 +95,50 @@ export function DataTable<T>({
           .join(","),
       )
       .join("\n");
-    const blob = new Blob([`${head}\n${body}`], { type: "text/csv;charset=utf-8" });
+    const banner = [`"Trygc CRM HUB"`, `"${brandTitle}"`, `"Generated ${stamp} UTC"`, `""`].join("\n");
+    const blob = new Blob([`${banner}\n${head}\n${body}`], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${exportName}.csv`;
+    a.download = `${fileBase}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
+
+  const exportPdf = () => {
+    const esc = (s: unknown) => String(s ?? "").replace(/[&<>]/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[m] as string);
+    const head = visible.map((c) => `<th>${esc(c.header)}</th>`).join("");
+    const body = sorted
+      .map((r) => `<tr>${visible.map((c) => `<td>${esc(c.sortValue ? c.sortValue(r) : "")}</td>`).join("")}</tr>`)
+      .join("");
+    const win = window.open("", "_blank", "width=1100,height=800");
+    if (!win) return;
+    win.document.write(`<!doctype html><html><head><title>Trygc CRM HUB — ${esc(brandTitle)}</title><style>
+      *{font-family:ui-sans-serif,system-ui,Segoe UI,Arial,sans-serif}
+      body{margin:32px;color:#141824}
+      header{display:flex;align-items:center;gap:12px;border-bottom:3px solid #FF7A18;padding-bottom:12px;margin-bottom:20px}
+      header img{height:36px}
+      .brand{font-size:18px;font-weight:700;letter-spacing:-0.01em}
+      .sub{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#7B3FF2;font-weight:600}
+      h1{font-size:15px;margin:0 0 4px}
+      .meta{font-size:11px;color:#666;margin-bottom:14px}
+      table{width:100%;border-collapse:collapse;font-size:11px}
+      th{text-align:left;background:#f4f4f7;padding:6px 8px;border-bottom:1px solid #ddd}
+      td{padding:5px 8px;border-bottom:1px solid #eee}
+      footer{margin-top:18px;font-size:10px;color:#888}
+      @media print{body{margin:14mm}}
+    </style></head><body>
+      <header><img src="${window.location.origin}/favicon.png" alt="Trygc" /><div><div class="brand">Trygc</div><div class="sub">CRM HUB</div></div></header>
+      <h1>${esc(brandTitle)}</h1>
+      <div class="meta">Generated ${esc(stamp)} UTC · ${sorted.length} records</div>
+      <table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>
+      <footer>Trygc CRM HUB — confidential internal report.</footer>
+    </body></html>`);
+    win.document.close();
+    win.focus();
+    setTimeout(() => win.print(), 400);
+  };
+
 
   const toggleSort = (key: string) =>
     setSort((prev) => (prev?.key !== key ? { key, dir: "asc" } : prev.dir === "asc" ? { key, dir: "desc" } : null));
@@ -150,8 +190,12 @@ export function DataTable<T>({
             </DropdownMenuContent>
           </DropdownMenu>
           <Button variant="outline" size="sm" onClick={exportCsv}>
-            <Download className="size-4" /> Export
+            <Download className="size-4" /> CSV
           </Button>
+          <Button variant="outline" size="sm" onClick={exportPdf}>
+            <FileText className="size-4" /> PDF
+          </Button>
+
         </div>
       </div>
 

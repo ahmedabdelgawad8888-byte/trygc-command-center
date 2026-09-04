@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { PageHeader, Panel, Pill, Section, Stat } from "@/components/kit";
 import { DataTable, type Column } from "@/components/data-table";
+import { ChartRow, BarChartCard, DonutChartCard, countBy, sumBy } from "@/components/charts";
 import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { num } from "@/lib/format";
@@ -98,6 +99,10 @@ function Migration() {
           </Section>
         </Panel>
         <Panel className="min-w-0 xl:col-span-2">
+          <ChartRow cols={2}>
+            <BarChartCard title={t("Rows imported by batch", "الصفوف المستوردة لكل دفعة")} data={batches.map((b) => ({ name: b.target, value: b.imported }))} horizontal colorful />
+            <BarChartCard title={t("Rejected rows by batch", "الصفوف المرفوضة لكل دفعة")} data={batches.map((b) => ({ name: b.target, value: b.errors }))} horizontal />
+          </ChartRow>
           <Section title={t("Import batches", "دفعات الاستيراد")}>
             <DataTable rows={batches} columns={columns} rowKey={(r) => r.id} searchable={(r) => `${r.source} ${r.target}`} exportName="trygc-migration" pageSize={8} />
           </Section>
@@ -116,9 +121,9 @@ function Migration() {
 export const Route = createFileRoute("/admin/migration")({
   head: () => ({
     meta: [
-      { title: "Data Migration | Trygc Operations OS" },
+      { title: "Data Migration | Trygc CRM HUB" },
       { name: "description", content: "Map, validate and import legacy spreadsheets into Trygc with group validation rules enforced before load." },
-      { property: "og:title", content: "Data Migration | Trygc Operations OS" },
+      { property: "og:title", content: "Data Migration | Trygc CRM HUB" },
       { property: "og:description", content: "Validated legacy data import with rejected-row reporting." },
     ],
   }),

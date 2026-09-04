@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { PageHeader, Panel, Pill, Section, Stat, StatusPill } from "@/components/kit";
+import { ChartRow, BarChartCard, DonutChartCard, countBy, sumBy } from "@/components/charts";
 import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { useExceptions } from "@/lib/use-exceptions";
@@ -35,6 +36,10 @@ function Workspace() {
 
       <div className="grid gap-4 xl:grid-cols-2">
         <Panel>
+          <ChartRow cols={2}>
+            <DonutChartCard title={t("My tasks by status", "مهامي حسب الحالة")} data={countBy(myTasks, (x) => x.status)} />
+            <BarChartCard title={t("My open deal value by stage", "قيمة صفقاتي حسب المرحلة")} data={sumBy(myDeals, (d) => d.stage, (d) => d.value)} horizontal colorful format={(v) => money(v, "SAR")} />
+          </ChartRow>
           <Section title={t("Today's tasks", "مهام اليوم")} actions={<Button size="sm" variant="outline" asChild><Link to="/tasks">{t("All tasks", "كل المهام")}</Link></Button>}>
             <div className="space-y-2">
               {myTasks.slice(0, 8).map((task) => (
@@ -139,9 +144,9 @@ function Workspace() {
 export const Route = createFileRoute("/workspace")({
   head: () => ({
     meta: [
-      { title: "My Workspace | Trygc Operations OS" },
+      { title: "My Workspace | Trygc CRM HUB" },
       { name: "description", content: "Your personal queue: tasks due today, approvals waiting on you, assigned operations items and deals needing action." },
-      { property: "og:title", content: "My Workspace | Trygc Operations OS" },
+      { property: "og:title", content: "My Workspace | Trygc CRM HUB" },
       { property: "og:description", content: "Personal queue of tasks, approvals, operations items and deals." },
     ],
   }),
