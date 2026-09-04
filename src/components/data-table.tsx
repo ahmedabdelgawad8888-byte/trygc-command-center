@@ -1,5 +1,5 @@
-import { useMemo, useState, type ReactNode } from "react";
-import { ArrowDown, ArrowUp, ChevronsUpDown, Download, FileText, Lock, Search, Settings2, X } from "lucide-react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { ArrowDown, ArrowUp, ChevronsUpDown, Download, FileText, Lock, PanelRightOpen, Search, Settings2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,9 @@ import { cn } from "@/lib/utils";
 import { useApp } from "@/lib/store";
 import { useDrill } from "@/lib/drill";
 import { useExportPrefs } from "@/lib/export-prefs";
+import { useExportQueue } from "@/lib/export-queue";
 import { ExportPreferencesPanel } from "@/components/export-preferences";
+
 
 export interface Column<T> {
   key: string;
