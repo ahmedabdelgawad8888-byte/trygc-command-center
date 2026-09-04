@@ -12,6 +12,8 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { AppProvider } from "../lib/store";
 import { LangProvider } from "../lib/i18n";
+import { ExportPrefsProvider } from "../lib/export-prefs";
+import { DrillProvider } from "../lib/drill";
 import { AppShell } from "../components/layout/app-shell";
 import { Toaster } from "../components/ui/sonner";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -131,11 +133,15 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <LangProvider>
         <AppProvider>
-          <AppShell>
-            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-            <Outlet />
-          </AppShell>
-          <Toaster position="top-right" richColors />
+          <ExportPrefsProvider>
+            <DrillProvider>
+              <AppShell>
+                {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+                <Outlet />
+              </AppShell>
+              <Toaster position="top-right" richColors />
+            </DrillProvider>
+          </ExportPrefsProvider>
         </AppProvider>
       </LangProvider>
     </QueryClientProvider>
