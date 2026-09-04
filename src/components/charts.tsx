@@ -30,7 +30,7 @@ const PALETTE = [
 const AXIS = { tickLine: false, axisLine: false, fontSize: 11 } as const;
 const TOOLTIP = { borderRadius: 10, fontSize: 12, border: "1px solid var(--color-border)", background: "var(--color-card)" } as const;
 
-function Frame({ title, description, children, className }: { title: string; description?: string; children: React.ReactNode; className?: string }) {
+function Frame({ title, description, children, className }: { title: string; description?: string | undefined; children: React.ReactNode; className?: string | undefined }) {
   return (
     <Panel className={cn("min-w-0", className)}>
       <div className="mb-3">
@@ -52,12 +52,12 @@ export function BarChartCard({
   className,
 }: {
   title: string;
-  description?: string;
+  description?: string | undefined;
   data: ChartPoint[];
-  format?: (v: number) => string;
+  format?: ((v: number) => string) | undefined;
   horizontal?: boolean;
   colorful?: boolean;
-  className?: string;
+  className?: string | undefined;
 }) {
   const fmt = format ?? ((v: number) => String(v));
   return (
@@ -94,10 +94,10 @@ export function DonutChartCard({
   className,
 }: {
   title: string;
-  description?: string;
+  description?: string | undefined;
   data: ChartPoint[];
-  format?: (v: number) => string;
-  className?: string;
+  format?: ((v: number) => string) | undefined;
+  className?: string | undefined;
 }) {
   const fmt = format ?? ((v: number) => String(v));
   const rows = data.filter((d) => d.value > 0);
@@ -126,10 +126,10 @@ export function TrendChartCard({
   className,
 }: {
   title: string;
-  description?: string;
+  description?: string | undefined;
   data: ChartPoint[];
-  format?: (v: number) => string;
-  className?: string;
+  format?: ((v: number) => string) | undefined;
+  className?: string | undefined;
 }) {
   const fmt = format ?? ((v: number) => String(v));
   const id = `grad-${title.replace(/\W/g, "")}`;
