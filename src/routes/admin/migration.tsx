@@ -97,7 +97,7 @@ function Migration() {
             </ul>
           </Section>
         </Panel>
-        <Panel className="xl:col-span-2">
+        <Panel className="min-w-0 xl:col-span-2">
           <Section title={t("Import batches", "دفعات الاستيراد")}>
             <DataTable rows={batches} columns={columns} rowKey={(r) => r.id} searchable={(r) => `${r.source} ${r.target}`} exportName="trygc-migration" pageSize={8} />
           </Section>
