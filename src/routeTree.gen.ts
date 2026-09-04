@@ -10,33 +10,492 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ActivityRouteImport } from './routes/activity'
+import { Route as AlertsRouteImport } from './routes/alerts'
+import { Route as ApprovalsRouteImport } from './routes/approvals'
+import { Route as CommunityRouteImport } from './routes/community'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as FilesRouteImport } from './routes/files'
+import { Route as OperationsRouteImport } from './routes/operations'
+import { Route as ReportsRouteImport } from './routes/reports'
+import { Route as TasksRouteImport } from './routes/tasks'
+import { Route as WorkspaceRouteImport } from './routes/workspace'
+import { Route as AdminAuditRouteImport } from './routes/admin/audit'
+import { Route as AdminAutomationsRouteImport } from './routes/admin/automations'
+import { Route as AdminIntegrationsRouteImport } from './routes/admin/integrations'
+import { Route as AdminMigrationRouteImport } from './routes/admin/migration'
+import { Route as AdminRolesRouteImport } from './routes/admin/roles'
+import { Route as AdminSaasRouteImport } from './routes/admin/saas'
+import { Route as AdminUsersRouteImport } from './routes/admin/users'
+import { Route as CampaignsIndexRouteImport } from './routes/campaigns/index'
+import { Route as CampaignsCampaignIdRouteImport } from './routes/campaigns/$campaignId'
+import { Route as CampaignsCoverageRouteImport } from './routes/campaigns/coverage'
+import { Route as CampaignsInfluencersRouteImport } from './routes/campaigns/influencers'
+import { Route as CrmIndexRouteImport } from './routes/crm/index'
+import { Route as CrmActivitiesRouteImport } from './routes/crm/activities'
+import { Route as CrmDealsRouteImport } from './routes/crm/deals'
+import { Route as CrmLeadsRouteImport } from './routes/crm/leads'
+import { Route as FinanceIndexRouteImport } from './routes/finance/index'
+import { Route as FinanceCoaRouteImport } from './routes/finance/coa'
+import { Route as FinanceConsolidationRouteImport } from './routes/finance/consolidation'
+import { Route as FinanceEntitiesRouteImport } from './routes/finance/entities'
+import { Route as FinanceExpensesRouteImport } from './routes/finance/expenses'
+import { Route as FinanceFxRouteImport } from './routes/finance/fx'
+import { Route as FinanceInvoicesRouteImport } from './routes/finance/invoices'
+import { Route as FinancePaymentsRouteImport } from './routes/finance/payments'
+import { Route as CrmClientsIndexRouteImport } from './routes/crm/clients/index'
+import { Route as CrmClientsClientIdRouteImport } from './routes/crm/clients/$clientId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ActivityRoute = ActivityRouteImport.update({
+  id: '/activity',
+  path: '/activity',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlertsRoute = AlertsRouteImport.update({
+  id: '/alerts',
+  path: '/alerts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApprovalsRoute = ApprovalsRouteImport.update({
+  id: '/approvals',
+  path: '/approvals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityRoute = CommunityRouteImport.update({
+  id: '/community',
+  path: '/community',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FilesRoute = FilesRouteImport.update({
+  id: '/files',
+  path: '/files',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OperationsRoute = OperationsRouteImport.update({
+  id: '/operations',
+  path: '/operations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportsRoute = ReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TasksRoute = TasksRouteImport.update({
+  id: '/tasks',
+  path: '/tasks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorkspaceRoute = WorkspaceRouteImport.update({
+  id: '/workspace',
+  path: '/workspace',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAuditRoute = AdminAuditRouteImport.update({
+  id: '/admin/audit',
+  path: '/admin/audit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAutomationsRoute = AdminAutomationsRouteImport.update({
+  id: '/admin/automations',
+  path: '/admin/automations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIntegrationsRoute = AdminIntegrationsRouteImport.update({
+  id: '/admin/integrations',
+  path: '/admin/integrations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminMigrationRoute = AdminMigrationRouteImport.update({
+  id: '/admin/migration',
+  path: '/admin/migration',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRolesRoute = AdminRolesRouteImport.update({
+  id: '/admin/roles',
+  path: '/admin/roles',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSaasRoute = AdminSaasRouteImport.update({
+  id: '/admin/saas',
+  path: '/admin/saas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CampaignsIndexRoute = CampaignsIndexRouteImport.update({
+  id: '/campaigns/',
+  path: '/campaigns/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CampaignsCampaignIdRoute = CampaignsCampaignIdRouteImport.update({
+  id: '/campaigns/$campaignId',
+  path: '/campaigns/$campaignId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CampaignsCoverageRoute = CampaignsCoverageRouteImport.update({
+  id: '/campaigns/coverage',
+  path: '/campaigns/coverage',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CampaignsInfluencersRoute = CampaignsInfluencersRouteImport.update({
+  id: '/campaigns/influencers',
+  path: '/campaigns/influencers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CrmIndexRoute = CrmIndexRouteImport.update({
+  id: '/crm/',
+  path: '/crm/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CrmActivitiesRoute = CrmActivitiesRouteImport.update({
+  id: '/crm/activities',
+  path: '/crm/activities',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CrmDealsRoute = CrmDealsRouteImport.update({
+  id: '/crm/deals',
+  path: '/crm/deals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CrmLeadsRoute = CrmLeadsRouteImport.update({
+  id: '/crm/leads',
+  path: '/crm/leads',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FinanceIndexRoute = FinanceIndexRouteImport.update({
+  id: '/finance/',
+  path: '/finance/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FinanceCoaRoute = FinanceCoaRouteImport.update({
+  id: '/finance/coa',
+  path: '/finance/coa',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FinanceConsolidationRoute = FinanceConsolidationRouteImport.update({
+  id: '/finance/consolidation',
+  path: '/finance/consolidation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FinanceEntitiesRoute = FinanceEntitiesRouteImport.update({
+  id: '/finance/entities',
+  path: '/finance/entities',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FinanceExpensesRoute = FinanceExpensesRouteImport.update({
+  id: '/finance/expenses',
+  path: '/finance/expenses',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FinanceFxRoute = FinanceFxRouteImport.update({
+  id: '/finance/fx',
+  path: '/finance/fx',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FinanceInvoicesRoute = FinanceInvoicesRouteImport.update({
+  id: '/finance/invoices',
+  path: '/finance/invoices',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FinancePaymentsRoute = FinancePaymentsRouteImport.update({
+  id: '/finance/payments',
+  path: '/finance/payments',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CrmClientsIndexRoute = CrmClientsIndexRouteImport.update({
+  id: '/crm/clients/',
+  path: '/crm/clients/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CrmClientsClientIdRoute = CrmClientsClientIdRouteImport.update({
+  id: '/crm/clients/$clientId',
+  path: '/crm/clients/$clientId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/activity': typeof ActivityRoute
+  '/alerts': typeof AlertsRoute
+  '/approvals': typeof ApprovalsRoute
+  '/community': typeof CommunityRoute
+  '/dashboard': typeof DashboardRoute
+  '/files': typeof FilesRoute
+  '/operations': typeof OperationsRoute
+  '/reports': typeof ReportsRoute
+  '/tasks': typeof TasksRoute
+  '/workspace': typeof WorkspaceRoute
+  '/admin/audit': typeof AdminAuditRoute
+  '/admin/automations': typeof AdminAutomationsRoute
+  '/admin/integrations': typeof AdminIntegrationsRoute
+  '/admin/migration': typeof AdminMigrationRoute
+  '/admin/roles': typeof AdminRolesRoute
+  '/admin/saas': typeof AdminSaasRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/campaigns/$campaignId': typeof CampaignsCampaignIdRoute
+  '/campaigns/coverage': typeof CampaignsCoverageRoute
+  '/campaigns/influencers': typeof CampaignsInfluencersRoute
+  '/crm/activities': typeof CrmActivitiesRoute
+  '/crm/deals': typeof CrmDealsRoute
+  '/crm/leads': typeof CrmLeadsRoute
+  '/finance/coa': typeof FinanceCoaRoute
+  '/finance/consolidation': typeof FinanceConsolidationRoute
+  '/finance/entities': typeof FinanceEntitiesRoute
+  '/finance/expenses': typeof FinanceExpensesRoute
+  '/finance/fx': typeof FinanceFxRoute
+  '/finance/invoices': typeof FinanceInvoicesRoute
+  '/finance/payments': typeof FinancePaymentsRoute
+  '/campaigns/': typeof CampaignsIndexRoute
+  '/crm/': typeof CrmIndexRoute
+  '/finance/': typeof FinanceIndexRoute
+  '/crm/clients/$clientId': typeof CrmClientsClientIdRoute
+  '/crm/clients/': typeof CrmClientsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/activity': typeof ActivityRoute
+  '/alerts': typeof AlertsRoute
+  '/approvals': typeof ApprovalsRoute
+  '/community': typeof CommunityRoute
+  '/dashboard': typeof DashboardRoute
+  '/files': typeof FilesRoute
+  '/operations': typeof OperationsRoute
+  '/reports': typeof ReportsRoute
+  '/tasks': typeof TasksRoute
+  '/workspace': typeof WorkspaceRoute
+  '/admin/audit': typeof AdminAuditRoute
+  '/admin/automations': typeof AdminAutomationsRoute
+  '/admin/integrations': typeof AdminIntegrationsRoute
+  '/admin/migration': typeof AdminMigrationRoute
+  '/admin/roles': typeof AdminRolesRoute
+  '/admin/saas': typeof AdminSaasRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/campaigns/$campaignId': typeof CampaignsCampaignIdRoute
+  '/campaigns/coverage': typeof CampaignsCoverageRoute
+  '/campaigns/influencers': typeof CampaignsInfluencersRoute
+  '/crm/activities': typeof CrmActivitiesRoute
+  '/crm/deals': typeof CrmDealsRoute
+  '/crm/leads': typeof CrmLeadsRoute
+  '/finance/coa': typeof FinanceCoaRoute
+  '/finance/consolidation': typeof FinanceConsolidationRoute
+  '/finance/entities': typeof FinanceEntitiesRoute
+  '/finance/expenses': typeof FinanceExpensesRoute
+  '/finance/fx': typeof FinanceFxRoute
+  '/finance/invoices': typeof FinanceInvoicesRoute
+  '/finance/payments': typeof FinancePaymentsRoute
+  '/campaigns': typeof CampaignsIndexRoute
+  '/crm': typeof CrmIndexRoute
+  '/finance': typeof FinanceIndexRoute
+  '/crm/clients/$clientId': typeof CrmClientsClientIdRoute
+  '/crm/clients': typeof CrmClientsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/activity': typeof ActivityRoute
+  '/alerts': typeof AlertsRoute
+  '/approvals': typeof ApprovalsRoute
+  '/community': typeof CommunityRoute
+  '/dashboard': typeof DashboardRoute
+  '/files': typeof FilesRoute
+  '/operations': typeof OperationsRoute
+  '/reports': typeof ReportsRoute
+  '/tasks': typeof TasksRoute
+  '/workspace': typeof WorkspaceRoute
+  '/admin/audit': typeof AdminAuditRoute
+  '/admin/automations': typeof AdminAutomationsRoute
+  '/admin/integrations': typeof AdminIntegrationsRoute
+  '/admin/migration': typeof AdminMigrationRoute
+  '/admin/roles': typeof AdminRolesRoute
+  '/admin/saas': typeof AdminSaasRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/campaigns/$campaignId': typeof CampaignsCampaignIdRoute
+  '/campaigns/coverage': typeof CampaignsCoverageRoute
+  '/campaigns/influencers': typeof CampaignsInfluencersRoute
+  '/crm/activities': typeof CrmActivitiesRoute
+  '/crm/deals': typeof CrmDealsRoute
+  '/crm/leads': typeof CrmLeadsRoute
+  '/finance/coa': typeof FinanceCoaRoute
+  '/finance/consolidation': typeof FinanceConsolidationRoute
+  '/finance/entities': typeof FinanceEntitiesRoute
+  '/finance/expenses': typeof FinanceExpensesRoute
+  '/finance/fx': typeof FinanceFxRoute
+  '/finance/invoices': typeof FinanceInvoicesRoute
+  '/finance/payments': typeof FinancePaymentsRoute
+  '/campaigns/': typeof CampaignsIndexRoute
+  '/crm/': typeof CrmIndexRoute
+  '/finance/': typeof FinanceIndexRoute
+  '/crm/clients/$clientId': typeof CrmClientsClientIdRoute
+  '/crm/clients/': typeof CrmClientsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/activity'
+    | '/alerts'
+    | '/approvals'
+    | '/community'
+    | '/dashboard'
+    | '/files'
+    | '/operations'
+    | '/reports'
+    | '/tasks'
+    | '/workspace'
+    | '/admin/audit'
+    | '/admin/automations'
+    | '/admin/integrations'
+    | '/admin/migration'
+    | '/admin/roles'
+    | '/admin/saas'
+    | '/admin/users'
+    | '/campaigns/$campaignId'
+    | '/campaigns/coverage'
+    | '/campaigns/influencers'
+    | '/crm/activities'
+    | '/crm/deals'
+    | '/crm/leads'
+    | '/finance/coa'
+    | '/finance/consolidation'
+    | '/finance/entities'
+    | '/finance/expenses'
+    | '/finance/fx'
+    | '/finance/invoices'
+    | '/finance/payments'
+    | '/campaigns/'
+    | '/crm/'
+    | '/finance/'
+    | '/crm/clients/$clientId'
+    | '/crm/clients/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/activity'
+    | '/alerts'
+    | '/approvals'
+    | '/community'
+    | '/dashboard'
+    | '/files'
+    | '/operations'
+    | '/reports'
+    | '/tasks'
+    | '/workspace'
+    | '/admin/audit'
+    | '/admin/automations'
+    | '/admin/integrations'
+    | '/admin/migration'
+    | '/admin/roles'
+    | '/admin/saas'
+    | '/admin/users'
+    | '/campaigns/$campaignId'
+    | '/campaigns/coverage'
+    | '/campaigns/influencers'
+    | '/crm/activities'
+    | '/crm/deals'
+    | '/crm/leads'
+    | '/finance/coa'
+    | '/finance/consolidation'
+    | '/finance/entities'
+    | '/finance/expenses'
+    | '/finance/fx'
+    | '/finance/invoices'
+    | '/finance/payments'
+    | '/campaigns'
+    | '/crm'
+    | '/finance'
+    | '/crm/clients/$clientId'
+    | '/crm/clients'
+  id:
+    | '__root__'
+    | '/'
+    | '/activity'
+    | '/alerts'
+    | '/approvals'
+    | '/community'
+    | '/dashboard'
+    | '/files'
+    | '/operations'
+    | '/reports'
+    | '/tasks'
+    | '/workspace'
+    | '/admin/audit'
+    | '/admin/automations'
+    | '/admin/integrations'
+    | '/admin/migration'
+    | '/admin/roles'
+    | '/admin/saas'
+    | '/admin/users'
+    | '/campaigns/$campaignId'
+    | '/campaigns/coverage'
+    | '/campaigns/influencers'
+    | '/crm/activities'
+    | '/crm/deals'
+    | '/crm/leads'
+    | '/finance/coa'
+    | '/finance/consolidation'
+    | '/finance/entities'
+    | '/finance/expenses'
+    | '/finance/fx'
+    | '/finance/invoices'
+    | '/finance/payments'
+    | '/campaigns/'
+    | '/crm/'
+    | '/finance/'
+    | '/crm/clients/$clientId'
+    | '/crm/clients/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ActivityRoute: typeof ActivityRoute
+  AlertsRoute: typeof AlertsRoute
+  ApprovalsRoute: typeof ApprovalsRoute
+  CommunityRoute: typeof CommunityRoute
+  DashboardRoute: typeof DashboardRoute
+  FilesRoute: typeof FilesRoute
+  OperationsRoute: typeof OperationsRoute
+  ReportsRoute: typeof ReportsRoute
+  TasksRoute: typeof TasksRoute
+  WorkspaceRoute: typeof WorkspaceRoute
+  AdminAuditRoute: typeof AdminAuditRoute
+  AdminAutomationsRoute: typeof AdminAutomationsRoute
+  AdminIntegrationsRoute: typeof AdminIntegrationsRoute
+  AdminMigrationRoute: typeof AdminMigrationRoute
+  AdminRolesRoute: typeof AdminRolesRoute
+  AdminSaasRoute: typeof AdminSaasRoute
+  AdminUsersRoute: typeof AdminUsersRoute
+  CampaignsCampaignIdRoute: typeof CampaignsCampaignIdRoute
+  CampaignsCoverageRoute: typeof CampaignsCoverageRoute
+  CampaignsInfluencersRoute: typeof CampaignsInfluencersRoute
+  CrmActivitiesRoute: typeof CrmActivitiesRoute
+  CrmDealsRoute: typeof CrmDealsRoute
+  CrmLeadsRoute: typeof CrmLeadsRoute
+  FinanceCoaRoute: typeof FinanceCoaRoute
+  FinanceConsolidationRoute: typeof FinanceConsolidationRoute
+  FinanceEntitiesRoute: typeof FinanceEntitiesRoute
+  FinanceExpensesRoute: typeof FinanceExpensesRoute
+  FinanceFxRoute: typeof FinanceFxRoute
+  FinanceInvoicesRoute: typeof FinanceInvoicesRoute
+  FinancePaymentsRoute: typeof FinancePaymentsRoute
+  CampaignsIndexRoute: typeof CampaignsIndexRoute
+  CrmIndexRoute: typeof CrmIndexRoute
+  FinanceIndexRoute: typeof FinanceIndexRoute
+  CrmClientsClientIdRoute: typeof CrmClientsClientIdRoute
+  CrmClientsIndexRoute: typeof CrmClientsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +507,291 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/activity': {
+      id: '/activity'
+      path: '/activity'
+      fullPath: '/activity'
+      preLoaderRoute: typeof ActivityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alerts': {
+      id: '/alerts'
+      path: '/alerts'
+      fullPath: '/alerts'
+      preLoaderRoute: typeof AlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/approvals': {
+      id: '/approvals'
+      path: '/approvals'
+      fullPath: '/approvals'
+      preLoaderRoute: typeof ApprovalsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community': {
+      id: '/community'
+      path: '/community'
+      fullPath: '/community'
+      preLoaderRoute: typeof CommunityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/files': {
+      id: '/files'
+      path: '/files'
+      fullPath: '/files'
+      preLoaderRoute: typeof FilesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/operations': {
+      id: '/operations'
+      path: '/operations'
+      fullPath: '/operations'
+      preLoaderRoute: typeof OperationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reports': {
+      id: '/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof ReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tasks': {
+      id: '/tasks'
+      path: '/tasks'
+      fullPath: '/tasks'
+      preLoaderRoute: typeof TasksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/workspace': {
+      id: '/workspace'
+      path: '/workspace'
+      fullPath: '/workspace'
+      preLoaderRoute: typeof WorkspaceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/audit': {
+      id: '/admin/audit'
+      path: '/admin/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AdminAuditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/automations': {
+      id: '/admin/automations'
+      path: '/admin/automations'
+      fullPath: '/admin/automations'
+      preLoaderRoute: typeof AdminAutomationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/integrations': {
+      id: '/admin/integrations'
+      path: '/admin/integrations'
+      fullPath: '/admin/integrations'
+      preLoaderRoute: typeof AdminIntegrationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/migration': {
+      id: '/admin/migration'
+      path: '/admin/migration'
+      fullPath: '/admin/migration'
+      preLoaderRoute: typeof AdminMigrationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/roles': {
+      id: '/admin/roles'
+      path: '/admin/roles'
+      fullPath: '/admin/roles'
+      preLoaderRoute: typeof AdminRolesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/saas': {
+      id: '/admin/saas'
+      path: '/admin/saas'
+      fullPath: '/admin/saas'
+      preLoaderRoute: typeof AdminSaasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/campaigns/': {
+      id: '/campaigns/'
+      path: '/campaigns'
+      fullPath: '/campaigns/'
+      preLoaderRoute: typeof CampaignsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/campaigns/$campaignId': {
+      id: '/campaigns/$campaignId'
+      path: '/campaigns/$campaignId'
+      fullPath: '/campaigns/$campaignId'
+      preLoaderRoute: typeof CampaignsCampaignIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/campaigns/coverage': {
+      id: '/campaigns/coverage'
+      path: '/campaigns/coverage'
+      fullPath: '/campaigns/coverage'
+      preLoaderRoute: typeof CampaignsCoverageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/campaigns/influencers': {
+      id: '/campaigns/influencers'
+      path: '/campaigns/influencers'
+      fullPath: '/campaigns/influencers'
+      preLoaderRoute: typeof CampaignsInfluencersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/crm/': {
+      id: '/crm/'
+      path: '/crm'
+      fullPath: '/crm/'
+      preLoaderRoute: typeof CrmIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/crm/activities': {
+      id: '/crm/activities'
+      path: '/crm/activities'
+      fullPath: '/crm/activities'
+      preLoaderRoute: typeof CrmActivitiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/crm/deals': {
+      id: '/crm/deals'
+      path: '/crm/deals'
+      fullPath: '/crm/deals'
+      preLoaderRoute: typeof CrmDealsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/crm/leads': {
+      id: '/crm/leads'
+      path: '/crm/leads'
+      fullPath: '/crm/leads'
+      preLoaderRoute: typeof CrmLeadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/finance/': {
+      id: '/finance/'
+      path: '/finance'
+      fullPath: '/finance/'
+      preLoaderRoute: typeof FinanceIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/finance/coa': {
+      id: '/finance/coa'
+      path: '/finance/coa'
+      fullPath: '/finance/coa'
+      preLoaderRoute: typeof FinanceCoaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/finance/consolidation': {
+      id: '/finance/consolidation'
+      path: '/finance/consolidation'
+      fullPath: '/finance/consolidation'
+      preLoaderRoute: typeof FinanceConsolidationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/finance/entities': {
+      id: '/finance/entities'
+      path: '/finance/entities'
+      fullPath: '/finance/entities'
+      preLoaderRoute: typeof FinanceEntitiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/finance/expenses': {
+      id: '/finance/expenses'
+      path: '/finance/expenses'
+      fullPath: '/finance/expenses'
+      preLoaderRoute: typeof FinanceExpensesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/finance/fx': {
+      id: '/finance/fx'
+      path: '/finance/fx'
+      fullPath: '/finance/fx'
+      preLoaderRoute: typeof FinanceFxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/finance/invoices': {
+      id: '/finance/invoices'
+      path: '/finance/invoices'
+      fullPath: '/finance/invoices'
+      preLoaderRoute: typeof FinanceInvoicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/finance/payments': {
+      id: '/finance/payments'
+      path: '/finance/payments'
+      fullPath: '/finance/payments'
+      preLoaderRoute: typeof FinancePaymentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/crm/clients/': {
+      id: '/crm/clients/'
+      path: '/crm/clients'
+      fullPath: '/crm/clients/'
+      preLoaderRoute: typeof CrmClientsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/crm/clients/$clientId': {
+      id: '/crm/clients/$clientId'
+      path: '/crm/clients/$clientId'
+      fullPath: '/crm/clients/$clientId'
+      preLoaderRoute: typeof CrmClientsClientIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ActivityRoute: ActivityRoute,
+  AlertsRoute: AlertsRoute,
+  ApprovalsRoute: ApprovalsRoute,
+  CommunityRoute: CommunityRoute,
+  DashboardRoute: DashboardRoute,
+  FilesRoute: FilesRoute,
+  OperationsRoute: OperationsRoute,
+  ReportsRoute: ReportsRoute,
+  TasksRoute: TasksRoute,
+  WorkspaceRoute: WorkspaceRoute,
+  AdminAuditRoute: AdminAuditRoute,
+  AdminAutomationsRoute: AdminAutomationsRoute,
+  AdminIntegrationsRoute: AdminIntegrationsRoute,
+  AdminMigrationRoute: AdminMigrationRoute,
+  AdminRolesRoute: AdminRolesRoute,
+  AdminSaasRoute: AdminSaasRoute,
+  AdminUsersRoute: AdminUsersRoute,
+  CampaignsCampaignIdRoute: CampaignsCampaignIdRoute,
+  CampaignsCoverageRoute: CampaignsCoverageRoute,
+  CampaignsInfluencersRoute: CampaignsInfluencersRoute,
+  CrmActivitiesRoute: CrmActivitiesRoute,
+  CrmDealsRoute: CrmDealsRoute,
+  CrmLeadsRoute: CrmLeadsRoute,
+  FinanceCoaRoute: FinanceCoaRoute,
+  FinanceConsolidationRoute: FinanceConsolidationRoute,
+  FinanceEntitiesRoute: FinanceEntitiesRoute,
+  FinanceExpensesRoute: FinanceExpensesRoute,
+  FinanceFxRoute: FinanceFxRoute,
+  FinanceInvoicesRoute: FinanceInvoicesRoute,
+  FinancePaymentsRoute: FinancePaymentsRoute,
+  CampaignsIndexRoute: CampaignsIndexRoute,
+  CrmIndexRoute: CrmIndexRoute,
+  FinanceIndexRoute: FinanceIndexRoute,
+  CrmClientsClientIdRoute: CrmClientsClientIdRoute,
+  CrmClientsIndexRoute: CrmClientsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
