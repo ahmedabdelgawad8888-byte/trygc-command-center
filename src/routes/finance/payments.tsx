@@ -40,7 +40,7 @@ function Payments() {
       <ChartRow>
         <ShareChartCard title={t("Collections by method", "التحصيل حسب الوسيلة")} data={sumBy(rows, (r) => r.method, (r) => toSAR(r.amount, r.currency))} format={(v) => compactMoney(v, "SAR")} />
         <BarChartCard title={t("Collections by entity (SAR)", "التحصيل حسب الكيان")} data={sumBy(rows, (r) => entityName(r.entityId), (r) => toSAR(r.amount, r.currency))} format={(v) => compactMoney(v, "SAR")} />
-        <TrendChartCard title={t("Cash received over time (SAR)", "النقد المحصل عبر الزمن")} data={sumBy([...rows].sort((a, b) => a.date.localeCompare(b.date)), (r) => shortDate(r.date), (r) => toSAR(r.amount, r.currency))} format={(v) => compactMoney(v, "SAR")} />
+        <TrendChartCard title={t("Cash received over time (SAR)", "النقد المحصل عبر الزمن")} data={sumBy([...rows].sort((a, b) => a.date.localeCompare(b.date)), (r) => shortDate(r.date), (r) => toSAR(r.amount, r.currency))} format={(v) => compactMoney(v, "SAR")} trendLine />
       </ChartRow>
       <Section title={t("Payment register", "سجل المدفوعات")}>
         <DataTable rows={rows} columns={columns} rowKey={(r) => r.id} searchable={(r) => `${r.reference} ${invoice(r.invoiceId)?.number ?? ""}`} exportName="trygc-payments" pageSize={12} />

@@ -363,3 +363,67 @@ export function buildExceptions(input: {
   const order = { Critical: 0, High: 1, Medium: 2 };
   return out.sort((a, b) => order[a.severity] - order[b.severity]);
 }
+
+/* ── Period-over-period movement ───────────────────────────────────────
+   Compares a trailing window against the window immediately before it.
+   Trailing windows are used rather than calendar months because a partial
+   current month against a complete previous one produces a fall that is an
+   artefact of the calendar rather than a real movement. */
+
+export interface PeriodDelta {
+  pct: number;
+  current: number;
+  previous: number;
+  baseline: string;
+}
+
+const DAY = 86_400_000;
+const shift = (iso: string, days: number) => new Date(new Date(iso).getTime() + days * DAY).getTime();
+
+/**
+ * Movement between the `days` before `today` and the `days` before that.
+ *
+ * Returns null when the prior window holds nothing to compare against — a
+ * percentage against zero is not a movement, and showing one would invent a
+ * number the data cannot support.
+ */
+export function periodDelta<T>(
+  rows: T[],
+  date: (r: T) => string,
+  amount: (r: T) => number,
+  today: string,
+  days = 30,
+  minSample = 3,
+): PeriodDelta | null {
+  const now = new Date(today).getTime();
+  const midpoint = shift(today, -days);
+  const start = shift(today, -days * 2);
+
+  let current = 0;
+  let previous = 0;
+  let previousRows = 0;
+  for (const r of rows) {
+    const at = new Date(date(r)).getTime();
+    if (Number.isNaN(at)) continue;
+    if (at > midpoint && at <= now) current += amount(r);
+    else if (at > start && at <= midpoint) {
+      previous += amount(r);
+      previousRows++;
+    }
+  }
+
+  // Too thin a prior window produces a headline percentage that says more about
+  // where a handful of rows landed than about the business. Report nothing instead.
+  if (previousRows < minSample || previous === 0) return null;
+  return {
+    pct: ((current - previous) / Math.abs(previous)) * 100,
+    current,
+    previous,
+    baseline: `vs previous ${days} days`,
+  };
+}
+
+/** Count-based variant of {@link periodDelta}. */
+export function countDelta<T>(rows: T[], date: (r: T) => string, today: string, days = 30, minSample = 3) {
+  return periodDelta(rows, date, () => 1, today, days, minSample);
+}

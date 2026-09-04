@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { PageHeader, Section, Stat, StatusPill } from "@/components/kit";
+import { PageHeader, RatioBar, Section, Stat, StatusPill } from "@/components/kit";
 import { DataTable, type Column } from "@/components/data-table";
 import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
@@ -31,6 +31,9 @@ function Invoices() {
 
   const arSAR = rows.reduce((s, i) => s + toSAR(invoiceOutstanding(i), i.currency), 0);
   const overdueSAR = rows.filter(isOverdue).reduce((s, i) => s + toSAR(invoiceOutstanding(i), i.currency), 0);
+  const invoicedSAR = rows.reduce((s, i) => s + toSAR(i.amount, i.currency), 0);
+  const collectedSAR = rows.reduce((s, i) => s + toSAR(i.paid, i.currency), 0);
+  const settled = rows.filter((r) => invoiceOutstanding(r) === 0 && r.status !== "Draft").length;
 
   return (
     <div className="space-y-6">
@@ -42,7 +45,38 @@ function Invoices() {
         <Stat label={t("Invoices", "الفواتير")} value={String(rows.length)} tone="brand" />
         <Stat label={t("Outstanding (SAR)", "المستحق")} value={compactMoney(arSAR, "SAR")} tone="orange" />
         <Stat label={t("Overdue (SAR)", "المتأخر")} value={compactMoney(overdueSAR, "SAR")} tone="danger" />
-        <Stat label={t("Fully paid", "مدفوعة بالكامل")} value={String(rows.filter((r) => invoiceOutstanding(r) === 0 && r.status !== "Draft").length)} tone="success" />
+        <Stat label={t("Fully paid", "مدفوعة بالكامل")} value={String(settled)} tone="success" />
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-3">
+        <RatioBar
+          label={t("Collected", "المحصّل")}
+          value={Math.round(collectedSAR)}
+          total={Math.round(invoicedSAR)}
+          display={compactMoney(collectedSAR, "SAR")}
+          valueLabel={compactMoney(collectedSAR, "SAR")}
+          totalLabel={compactMoney(invoicedSAR, "SAR")}
+          caption={t("of everything invoiced", "من إجمالي الفواتير")}
+          tone="success"
+        />
+        <RatioBar
+          label={t("Overdue share of receivables", "حصة المتأخر من الذمم")}
+          value={Math.round(overdueSAR)}
+          total={Math.round(arSAR)}
+          display={compactMoney(overdueSAR, "SAR")}
+          valueLabel={compactMoney(overdueSAR, "SAR")}
+          totalLabel={compactMoney(arSAR, "SAR")}
+          caption={t("past the due date", "بعد تاريخ الاستحقاق")}
+          tone="danger"
+        />
+        <RatioBar
+          label={t("Invoices settled", "الفواتير المسددة")}
+          value={settled}
+          total={rows.filter((r) => r.status !== "Draft").length}
+          valueLabel={`${settled} ${t("settled", "مسددة")}`}
+          totalLabel={`${rows.filter((r) => r.status !== "Draft").length} ${t("issued", "صادرة")}`}
+          caption={t("closed with nothing outstanding", "مغلقة بدون مستحقات")}
+        />
       </div>
       <ChartRow>
         <ShareChartCard title={t("Invoices by status", "الفواتير حسب الحالة")} data={countBy(rows, (r) => r.status)} />

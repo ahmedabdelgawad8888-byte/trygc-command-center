@@ -12,13 +12,13 @@ import {
 } from "recharts";
 
 import { Button } from "@/components/ui/button";
-import { PageHeader, Panel, Pill, Section, Stat, HealthPill, Bar } from "@/components/kit";
+import { PageHeader, Panel, Pill, Section, Stat, HealthPill, Bar, RatioBar, GoalMeter } from "@/components/kit";
 import { DataTable, type Column } from "@/components/data-table";
 import { SeriesBarChartCard, CHART_AXIS, CHART_GRID, CHART_TOOLTIP, CHART_TOOLTIP_LABEL, CHART_CURSOR } from "@/components/charts";
 import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { useExceptions } from "@/lib/use-exceptions";
-import { campaignHealth, campaignStats, entityFinance, invoiceOutstanding, isOverdue } from "@/lib/derive";
+import { campaignHealth, campaignStats, entityFinance, invoiceOutstanding, isOverdue, periodDelta } from "@/lib/derive";
 import { compactMoney, daysBetween, money, num, shortDate, toSAR } from "@/lib/format";
 import { TODAY } from "@/lib/data/seed";
 import { cn } from "@/lib/utils";
@@ -68,6 +68,16 @@ export function ExecDashboard() {
   const wonSAR = deals.filter((d) => d.stage === "Won").reduce((s, d) => s + toSAR(d.value, d.currency), 0);
   const overdueSAR = invoices.filter(isOverdue).reduce((s, i) => s + toSAR(invoiceOutstanding(i), i.currency), 0);
   const pendingApprovals = inScope(db.approvals).filter((a) => a.status === "Pending");
+
+  /* Ratios the seed data genuinely supports: money collected against money
+     invoiced, and creator deliverables verified against deliverables in scope. */
+  const invoicedSAR = invoices.reduce((sx, i) => sx + toSAR(i.amount, i.currency), 0);
+  const collectedSAR = invoices.reduce((sx, i) => sx + toSAR(i.paid, i.currency), 0);
+
+  /* Movement is computed from real issue dates and suppressed when the prior
+     window is too thin to compare against — see periodDelta. */
+  const collectedDelta = periodDelta(db.payments, (x) => x.date, (x) => toSAR(x.amount, x.currency), TODAY);
+  const invoicedDelta = periodDelta(invoices, (i) => i.issueDate, (i) => toSAR(i.amount, i.currency), TODAY);
 
   const campaignRows = campaigns.map((c) => {
     const stats = campaignStats(c, db.campaignInfluencers.filter((r) => r.campaignId === c.id));
@@ -295,10 +305,10 @@ export function ExecDashboard() {
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <Stat label={t("Revenue (SAR)", "الإيرادات")} value={compactMoney(totals.revenue, "SAR")} hint={t("Issued invoices, consolidated", "الفواتير الصادرة، موحّدة")} tone="brand" icon={<Banknote className="size-4" />} />
+        <Stat label={t("Revenue (SAR)", "الإيرادات")} value={compactMoney(totals.revenue, "SAR")} {...(invoicedDelta ? { delta: { pct: invoicedDelta.pct, baseline: t("vs previous 30 days", "مقابل ٣٠ يومًا سابقة") } } : {})} hint={t("Issued invoices, consolidated", "الفواتير الصادرة، موحّدة")} tone="brand" icon={<Banknote className="size-4" />} />
         <Stat label={t("Net profit (SAR)", "صافي الربح")} value={compactMoney(totals.profit, "SAR")} hint={`${Math.round((totals.profit / Math.max(1, totals.revenue)) * 100)}% ${t("margin", "هامش")}`} tone={totals.profit > 0 ? "success" : "danger"} />
         <Stat label={t("Open pipeline (SAR)", "خط الفرص")} value={compactMoney(pipelineSAR, "SAR")} hint={`${deals.filter((d) => !["Won", "Lost"].includes(d.stage)).length} ${t("live deals", "صفقة نشطة")}`} tone="orange" icon={<Target className="size-4" />} />
-        <Stat label={t("Cash position (SAR)", "الوضع النقدي")} value={compactMoney(totals.cash, "SAR")} hint={t("Collected against issued invoices", "المحصّل مقابل الفواتير الصادرة")} icon={<AlertTriangle className="size-4" />} />
+        <Stat label={t("Cash position (SAR)", "الوضع النقدي")} value={compactMoney(totals.cash, "SAR")} {...(collectedDelta ? { delta: { pct: collectedDelta.pct, baseline: t("vs previous 30 days", "مقابل ٣٠ يومًا سابقة") } } : {})} hint={t("Collected against issued invoices", "المحصّل مقابل الفواتير الصادرة")} icon={<AlertTriangle className="size-4" />} />
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -307,6 +317,55 @@ export function ExecDashboard() {
         <Stat label={t("Creators engaged", "صناع المحتوى")} value={num(coverage.length)} hint={`${coverage.filter((r) => r.stage === "Missing Posting Coverage").length} ${t("missing posting coverage", "بدون تغطية نشر")}`} icon={<Users className="size-4" />} />
         <Stat label={t("Open exceptions", "الاستثناءات المفتوحة")} value={num(exceptions.length)} hint={t("Need a decision today", "تحتاج قراراً اليوم")} tone={exceptions.length ? "warning" : "success"} />
       </div>
+
+      <Panel>
+        <Section
+          title={t("Collection and delivery against plan", "التحصيل والتنفيذ مقابل الخطة")}
+          description={t("Each figure is the ratio actually recorded, not a target.", "كل رقم هو النسبة المسجلة فعليًا وليس هدفًا.")}
+        >
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <RatioBar
+              label={t("Cash collected", "المحصّل")}
+              value={Math.round(collectedSAR)}
+              total={Math.round(invoicedSAR)}
+              display={compactMoney(collectedSAR, "SAR")}
+              valueLabel={compactMoney(collectedSAR, "SAR")}
+              totalLabel={compactMoney(invoicedSAR, "SAR")}
+              caption={t("of everything invoiced", "من إجمالي الفواتير")}
+              tone="success"
+            />
+            <RatioBar
+              label={t("Posting coverage verified", "التغطية الموثقة")}
+              value={coverage.filter((r) => ["Posting Coverage Verified", "Completed"].includes(r.stage)).length}
+              total={coverage.length}
+              valueLabel={`${coverage.filter((r) => ["Posting Coverage Verified", "Completed"].includes(r.stage)).length} ${t("verified", "موثق")}`}
+              totalLabel={`${coverage.length} ${t("in scope", "ضمن النطاق")}`}
+              caption={t("creator deliverables signed off", "مخرجات صناع المحتوى المعتمدة")}
+            />
+            <RatioBar
+              label={t("Campaigns on track", "حملات على المسار")}
+              value={campaignRows.filter((r) => r.health.health === "green").length}
+              total={campaignRows.length}
+              valueLabel={`${campaignRows.filter((r) => r.health.health === "green").length} ${t("green", "أخضر")}`}
+              totalLabel={`${campaignRows.length} ${t("live", "نشطة")}`}
+              caption={t("no open delivery risk", "لا توجد مخاطر تنفيذ")}
+              tone="brand"
+            />
+            <div className="rounded-lg border p-3">
+              <GoalMeter
+                label={t("Approvals cleared", "الموافقات المنجزة")}
+                value={inScope(db.approvals).filter((a) => a.status === "Approved").length}
+                target={inScope(db.approvals).length}
+                unit={t("decided", "تم البت فيها")}
+                caption={t(
+                  `${pendingApprovals.length} still waiting on a decision`,
+                  `${pendingApprovals.length} بانتظار القرار`,
+                )}
+              />
+            </div>
+          </div>
+        </Section>
+      </Panel>
 
       <div className="grid items-start gap-4 xl:grid-cols-3">
         <Panel className="xl:col-span-2">

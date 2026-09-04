@@ -7,6 +7,7 @@ import {
   Cell,
   LabelList,
   Legend,
+  Line,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -216,21 +217,39 @@ export function TrendChartCard({
   description,
   data,
   format,
+  trendLine = false,
   className,
 }: {
   title: string;
   description?: string | undefined;
   data: ChartPoint[];
   format?: ((v: number) => string) | undefined;
+  /** Overlay the least-squares fit so the direction is readable through the noise. */
+  trendLine?: boolean;
   className?: string | undefined;
 }) {
   const fmt = format ?? ((v: number) => String(v));
   const id = `grad-${title.replace(/\W/g, "")}`;
   const { pick } = useChartDrill(title);
+
+  // Least-squares fit over the series index, evaluated at each point.
+  const rows = (() => {
+    if (!trendLine || data.length < 2) return data;
+    const n = data.length;
+    const sumX = (n * (n - 1)) / 2;
+    const sumY = data.reduce((t, d) => t + d.value, 0);
+    const sumXY = data.reduce((t, d, i) => t + i * d.value, 0);
+    const sumXX = data.reduce((t, _d, i) => t + i * i, 0);
+    const denom = n * sumXX - sumX * sumX;
+    if (denom === 0) return data;
+    const slope = (n * sumXY - sumX * sumY) / denom;
+    const intercept = (sumY - slope * sumX) / n;
+    return data.map((d, i) => ({ ...d, trend: Math.max(0, intercept + slope * i) }));
+  })();
   return (
     <Frame title={title} description={description} className={className}>
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={data} margin={{ left: 4, right: 12, top: 6, bottom: 4 }} className="cursor-pointer" onClick={(e: { activeLabel?: string | number }) => pick(e?.activeLabel)}>
+        <AreaChart data={rows} margin={{ left: 4, right: 12, top: 6, bottom: 4 }} className="cursor-pointer" onClick={(e: { activeLabel?: string | number }) => pick(e?.activeLabel)}>
           <defs>
             <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor={PALETTE[0]} stopOpacity={0.45} />
@@ -242,6 +261,19 @@ export function TrendChartCard({
           <YAxis tickFormatter={fmt} width={64} {...AXIS} />
           <Tooltip formatter={(v: number) => fmt(v)} contentStyle={TOOLTIP} labelStyle={CHART_TOOLTIP_LABEL} />
           <Area type="linear" dataKey="value" name={title} stroke={PALETTE[0]} strokeWidth={2} fill={`url(#${id})`} dot={{ r: 2 }} />
+          {trendLine ? (
+            <Line
+              type="linear"
+              dataKey="trend"
+              name="Trend"
+              stroke={PALETTE[2]}
+              strokeWidth={1.5}
+              strokeDasharray="4 4"
+              dot={false}
+              activeDot={false}
+              legendType="none"
+            />
+          ) : null}
         </AreaChart>
       </ResponsiveContainer>
     </Frame>

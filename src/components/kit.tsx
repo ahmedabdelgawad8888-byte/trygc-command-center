@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { TrendingDown, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Health } from "@/lib/types";
 
@@ -58,6 +59,35 @@ export function Panel({ children, className }: { children: ReactNode; className?
   return <div className={cn("rounded-xl border bg-card p-5 shadow-[var(--shadow-panel)]", className)}>{children}</div>;
 }
 
+/** A period-over-period movement. `pct` is signed; `baseline` names what it is measured against. */
+export interface Delta {
+  pct: number;
+  baseline?: string;
+  /** Set when a fall is the good outcome (overdue debt, exceptions, breaches). */
+  inverse?: boolean;
+}
+
+/** Coloured movement pill: up/down arrow, signed percentage, and the baseline it compares to. */
+export function DeltaPill({ delta }: { delta: Delta }) {
+  const up = delta.pct >= 0;
+  const good = delta.inverse ? !up : up;
+  return (
+    <span className="inline-flex items-center gap-1">
+      <span
+        className={cn(
+          "num inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[11px] font-medium",
+          good ? "bg-success/12 text-success" : "bg-danger/12 text-danger",
+        )}
+      >
+        {up ? <TrendingUp className="size-3" /> : <TrendingDown className="size-3" />}
+        {up ? "+" : ""}
+        {Math.abs(delta.pct) >= 1000 ? ">999" : delta.pct.toFixed(1)}%
+      </span>
+      {delta.baseline ? <span className="text-[11px] text-muted-foreground">{delta.baseline}</span> : null}
+    </span>
+  );
+}
+
 export function Stat({
   label,
   value,
@@ -68,7 +98,7 @@ export function Stat({
 }: {
   label: string;
   value: string;
-  delta?: string;
+  delta?: Delta | undefined;
   hint?: string;
   tone?: "default" | "brand" | "orange" | "danger" | "success" | "warning";
   icon?: ReactNode;
@@ -96,8 +126,8 @@ export function Stat({
         {icon ? <span className="text-muted-foreground">{icon}</span> : null}
       </div>
       <div className={cn("num mt-2 text-2xl font-semibold", toneText[tone])}>{value}</div>
-      <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-        {delta ? <span className="font-medium">{delta}</span> : null}
+      <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+        {delta ? <DeltaPill delta={delta} /> : null}
         {hint ? <span>{hint}</span> : null}
       </div>
     </div>
@@ -176,6 +206,116 @@ export function Bar({ value, max, tone = "brand" }: { value: number; max: number
   return (
     <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
       <div className={cn("h-full rounded-full transition-all", bg)} style={{ width: `${pct}%` }} />
+    </div>
+  );
+}
+
+/** Progress toward a target: "12 of 18 sent" with a segmented meter and the share reached. */
+export function GoalMeter({
+  label,
+  value,
+  target,
+  unit,
+  caption,
+  segments = 32,
+}: {
+  label: string;
+  value: number;
+  target: number;
+  unit?: string;
+  caption?: string;
+  segments?: number;
+}) {
+  const pct = target <= 0 ? 0 : Math.min(100, (value / target) * 100);
+  const filled = Math.round((pct / 100) * segments);
+  return (
+    <div>
+      <div className="flex items-baseline justify-between gap-2">
+        <span className="text-xs font-medium tracking-wide text-muted-foreground uppercase">{label}</span>
+        <span className="num text-xs text-muted-foreground">of {target}</span>
+      </div>
+      <div className="num mt-1 flex items-baseline gap-1.5">
+        <span className="text-2xl font-semibold">{value}</span>
+        {unit ? <span className="text-xs text-muted-foreground">{unit}</span> : null}
+      </div>
+      <div className="mt-2 flex gap-px" aria-hidden>
+        {Array.from({ length: segments }, (_, i) => (
+          <span key={i} className={cn("h-4 flex-1 rounded-[1px]", i < filled ? "bg-chart-1" : "bg-muted")} />
+        ))}
+      </div>
+      <p className="mt-1.5 text-xs text-muted-foreground">
+        {caption ?? <><span className="num font-medium text-foreground">{Math.round(pct)}%</span> of target reached</>}
+      </p>
+    </div>
+  );
+}
+
+/** A ratio between two named quantities: a bar with the count at each end. */
+export function RatioBar({
+  label,
+  value,
+  total,
+  valueLabel,
+  totalLabel,
+  display,
+  caption,
+  tone = "brand",
+}: {
+  label: string;
+  value: number;
+  total: number;
+  valueLabel: string;
+  totalLabel: string;
+  /** Preformatted headline, for money or any value that should not print raw. */
+  display?: string;
+  caption?: string;
+  tone?: "brand" | "orange" | "success" | "danger";
+}) {
+  const pct = total <= 0 ? 0 : Math.min(100, (value / total) * 100);
+  return (
+    <div className="rounded-lg border p-3">
+      <div className="text-xs font-medium tracking-wide text-muted-foreground uppercase">{label}</div>
+      <div className="num mt-1 text-2xl font-semibold">{display ?? value}</div>
+      {caption ? <p className="mt-0.5 text-xs text-muted-foreground">{caption}</p> : null}
+      <div className="mt-2">
+        <Bar value={value} max={total} tone={tone} />
+        <div className="mt-1 flex justify-between text-[11px] text-muted-foreground">
+          <span className="num">{valueLabel}</span>
+          <span className="num">{totalLabel}</span>
+        </div>
+      </div>
+      <div className="num mt-1 text-[11px] font-medium">{Math.round(pct)}%</div>
+    </div>
+  );
+}
+
+/** Proportional segments of a whole, each labelled with its share. */
+export function ShareBar({
+  segments,
+  total,
+}: {
+  segments: { name: string; value: number; className: string }[];
+  total?: number;
+}) {
+  const sum = total ?? segments.reduce((n, s) => n + s.value, 0);
+  const pct = (v: number) => (sum > 0 ? (v / sum) * 100 : 0);
+  return (
+    <div>
+      <div className="flex h-3 w-full overflow-hidden rounded-full bg-muted">
+        {segments.map((s) => (
+          <div key={s.name} className={s.className} style={{ width: `${pct(s.value)}%` }} title={`${s.name}: ${s.value}`} />
+        ))}
+      </div>
+      <div className="mt-2.5 space-y-2">
+        {segments.map((s) => (
+          <div key={s.name} className="flex items-center gap-2 text-xs">
+            <span className={cn("size-2 shrink-0 rounded-full", s.className)} />
+            <span className="text-muted-foreground">{s.name}</span>
+            <span className="num ms-auto font-semibold">{s.value}</span>
+            <span className="num w-10 text-end text-muted-foreground">{Math.round(pct(s.value))}%</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
