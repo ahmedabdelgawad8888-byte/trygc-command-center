@@ -67,16 +67,14 @@ export function BarChartCard({
           <CartesianGrid strokeDasharray="3 3" vertical={horizontal} horizontal={!horizontal} className="stroke-border" />
           <XAxis
             type={horizontal ? "number" : "category"}
-            dataKey={horizontal ? undefined : "name"}
+            {...(horizontal ? { tickFormatter: fmt } : { dataKey: "name" as const })}
             interval={0}
-            tickFormatter={horizontal ? fmt : undefined}
             {...AXIS}
           />
           <YAxis
             type={horizontal ? "category" : "number"}
-            dataKey={horizontal ? "name" : undefined}
+            {...(horizontal ? { dataKey: "name" as const } : { tickFormatter: fmt })}
             width={horizontal ? 104 : 64}
-            tickFormatter={horizontal ? undefined : fmt}
             {...AXIS}
           />
           <Tooltip cursor={{ fill: "color-mix(in oklab, var(--color-muted) 60%, transparent)" }} formatter={(v: number) => fmt(v)} contentStyle={TOOLTIP} />
