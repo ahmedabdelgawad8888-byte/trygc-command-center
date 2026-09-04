@@ -106,7 +106,7 @@ export function DealsPage({ leadsOnly = false }: { leadsOnly?: boolean }) {
         </TabsContent>
         <TabsContent value="table" className="mt-4">
           <Panel className="p-0 shadow-none">
-            <Section>
+            <Section title={t("Deal table", "جدول الصفقات")}>
               <DataTable rows={rows} columns={columns} rowKey={(r) => r.id} searchable={(r) => `${r.name} ${clientName(r.clientId)} ${r.stage}`} exportName="trygc-deals" pageSize={12} />
             </Section>
           </Panel>

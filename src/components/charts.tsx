@@ -64,7 +64,7 @@ function Frame({ title, description, children, className }: { title: string; des
   return (
     <Panel className={cn("min-w-0", className)}>
       <div className="mb-3">
-        <h3 className="text-xs font-semibold uppercase tracking-wide">{title}</h3>
+        <h2 className="text-xs font-semibold uppercase tracking-wide">{title}</h2>
         {description ? <p className="mt-0.5 text-xs text-muted-foreground">{description}</p> : null}
       </div>
       <div className="h-56 w-full">{children}</div>
