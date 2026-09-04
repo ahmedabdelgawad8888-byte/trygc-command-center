@@ -48,9 +48,9 @@ function Activities() {
 export const Route = createFileRoute("/crm/activities")({
   head: () => ({
     meta: [
-      { title: "Activities & Meetings | Trygc Operations OS" },
+      { title: "Activities & Meetings | Trygc CRM HUB" },
       { name: "description", content: "Planned calls, meetings and follow-ups across the Trygc pipeline with owners and due dates." },
-      { property: "og:title", content: "Activities & Meetings | Trygc Operations OS" },
+      { property: "og:title", content: "Activities & Meetings | Trygc CRM HUB" },
       { property: "og:description", content: "Planned commercial touchpoints with owners and due dates." },
     ],
   }),

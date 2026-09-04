@@ -56,9 +56,9 @@ function Saas() {
 export const Route = createFileRoute("/admin/saas")({
   head: () => ({
     meta: [
-      { title: "SaaS Governance | Trygc Operations OS" },
+      { title: "SaaS Governance | Trygc CRM HUB" },
       { name: "description", content: "Corporate SaaS seat register with licence status, review dates and orphaned access detection." },
-      { property: "og:title", content: "SaaS Governance | Trygc Operations OS" },
+      { property: "og:title", content: "SaaS Governance | Trygc CRM HUB" },
       { property: "og:description", content: "Seat register with orphaned-access detection for leavers." },
     ],
   }),

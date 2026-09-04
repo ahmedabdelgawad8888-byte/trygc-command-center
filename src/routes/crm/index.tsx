@@ -118,9 +118,9 @@ function CrmDashboard() {
 export const Route = createFileRoute("/crm/")({
   head: () => ({
     meta: [
-      { title: "CRM Dashboard | Trygc Operations OS" },
+      { title: "CRM Dashboard | Trygc CRM HUB" },
       { name: "description", content: "Pipeline value, weighted forecast, win rate, stuck deals and at-risk accounts for Trygc sales teams." },
-      { property: "og:title", content: "CRM Dashboard | Trygc Operations OS" },
+      { property: "og:title", content: "CRM Dashboard | Trygc CRM HUB" },
       { property: "og:description", content: "Pipeline, forecast, win rate and account health in one view." },
     ],
   }),

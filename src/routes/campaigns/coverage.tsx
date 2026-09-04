@@ -68,9 +68,9 @@ function Coverage() {
 export const Route = createFileRoute("/campaigns/coverage")({
   head: () => ({
     meta: [
-      { title: "Posting Coverage | Trygc Operations OS" },
+      { title: "Posting Coverage | Trygc CRM HUB" },
       { name: "description", content: "Track promised, submitted, verified and missing Posting Coverage for every creator on every Trygc campaign." },
-      { property: "og:title", content: "Posting Coverage | Trygc Operations OS" },
+      { property: "og:title", content: "Posting Coverage | Trygc CRM HUB" },
       { property: "og:description", content: "Promised, submitted, verified and missing creator coverage in one queue." },
     ],
   }),

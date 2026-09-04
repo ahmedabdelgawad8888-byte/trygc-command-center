@@ -49,9 +49,9 @@ function Consolidation() {
 export const Route = createFileRoute("/finance/consolidation")({
   head: () => ({
     meta: [
-      { title: "Group Consolidation | Trygc Operations OS" },
+      { title: "Group Consolidation | Trygc CRM HUB" },
       { name: "description", content: "Entity-by-entity results in local currency alongside the SAR-consolidated group position." },
-      { property: "og:title", content: "Group Consolidation | Trygc Operations OS" },
+      { property: "og:title", content: "Group Consolidation | Trygc CRM HUB" },
       { property: "og:description", content: "Local currency results alongside SAR group consolidation." },
     ],
   }),

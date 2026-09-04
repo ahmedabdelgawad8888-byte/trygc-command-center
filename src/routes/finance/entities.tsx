@@ -52,9 +52,9 @@ function Entities() {
 export const Route = createFileRoute("/finance/entities")({
   head: () => ({
     meta: [
-      { title: "Entities | Trygc Operations OS" },
+      { title: "Entities | Trygc CRM HUB" },
       { name: "description", content: "Trygc operating companies across Saudi Arabia, Egypt, UAE, Kuwait, Qatar and Bahrain with currency and tax details." },
-      { property: "og:title", content: "Entities | Trygc Operations OS" },
+      { property: "og:title", content: "Entities | Trygc CRM HUB" },
       { property: "og:description", content: "Operating companies with currency, fiscal calendar, tax registration and local results." },
     ],
   }),

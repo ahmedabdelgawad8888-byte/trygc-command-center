@@ -36,9 +36,9 @@ function ActivityFeed() {
 export const Route = createFileRoute("/activity")({
   head: () => ({
     meta: [
-      { title: "Activity Feed | Trygc Operations OS" },
+      { title: "Activity Feed | Trygc CRM HUB" },
       { name: "description", content: "Immutable audit history of every change across CRM, campaigns, operations and finance." },
-      { property: "og:title", content: "Activity Feed | Trygc Operations OS" },
+      { property: "og:title", content: "Activity Feed | Trygc CRM HUB" },
       { property: "og:description", content: "Who changed what, when, and from which value to which value." },
     ],
   }),

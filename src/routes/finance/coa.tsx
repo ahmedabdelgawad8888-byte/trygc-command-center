@@ -106,9 +106,9 @@ function Coa() {
 export const Route = createFileRoute("/finance/coa")({
   head: () => ({
     meta: [
-      { title: "Chart of Accounts | Trygc Operations OS" },
+      { title: "Chart of Accounts | Trygc CRM HUB" },
       { name: "description", content: "Controlled group chart of accounts with branch request workflow and Group Finance approval." },
-      { property: "og:title", content: "Chart of Accounts | Trygc Operations OS" },
+      { property: "og:title", content: "Chart of Accounts | Trygc CRM HUB" },
       { property: "og:description", content: "Controlled group chart with request-and-approve governance." },
     ],
   }),

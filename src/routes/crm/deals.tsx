@@ -119,9 +119,9 @@ export function DealsPage({ leadsOnly = false }: { leadsOnly?: boolean }) {
 export const Route = createFileRoute("/crm/deals")({
   head: () => ({
     meta: [
-      { title: "Deals & Pipeline | Trygc Operations OS" },
+      { title: "Deals & Pipeline | Trygc CRM HUB" },
       { name: "description", content: "Trygc B2B pipeline board and table: stages, owners, values in local currency and stuck-deal detection." },
-      { property: "og:title", content: "Deals & Pipeline | Trygc Operations OS" },
+      { property: "og:title", content: "Deals & Pipeline | Trygc CRM HUB" },
       { property: "og:description", content: "Pipeline board and table with stage moves, owners and stuck-deal detection." },
     ],
   }),

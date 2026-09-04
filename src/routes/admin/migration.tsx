@@ -116,9 +116,9 @@ function Migration() {
 export const Route = createFileRoute("/admin/migration")({
   head: () => ({
     meta: [
-      { title: "Data Migration | Trygc Operations OS" },
+      { title: "Data Migration | Trygc CRM HUB" },
       { name: "description", content: "Map, validate and import legacy spreadsheets into Trygc with group validation rules enforced before load." },
-      { property: "og:title", content: "Data Migration | Trygc Operations OS" },
+      { property: "og:title", content: "Data Migration | Trygc CRM HUB" },
       { property: "og:description", content: "Validated legacy data import with rejected-row reporting." },
     ],
   }),

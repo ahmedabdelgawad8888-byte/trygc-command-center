@@ -55,9 +55,9 @@ function Users() {
 export const Route = createFileRoute("/admin/users")({
   head: () => ({
     meta: [
-      { title: "Users | Trygc Operations OS" },
+      { title: "Users | Trygc CRM HUB" },
       { name: "description", content: "User directory with roles, entity data scope, access status and last login across Trygc." },
-      { property: "og:title", content: "Users | Trygc Operations OS" },
+      { property: "og:title", content: "Users | Trygc CRM HUB" },
       { property: "og:description", content: "Roles, data scope and access status for every Trygc user." },
     ],
   }),

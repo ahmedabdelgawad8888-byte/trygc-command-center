@@ -4,9 +4,9 @@ import { DealsPage } from "./deals";
 export const Route = createFileRoute("/crm/leads")({
   head: () => ({
     meta: [
-      { title: "Leads | Trygc Operations OS" },
+      { title: "Leads | Trygc CRM HUB" },
       { name: "description", content: "New, contacted and qualified opportunities with owners, sources and the next action for each lead." },
-      { property: "og:title", content: "Leads | Trygc Operations OS" },
+      { property: "og:title", content: "Leads | Trygc CRM HUB" },
       { property: "og:description", content: "Early-stage opportunities with owners, sources and next actions." },
     ],
   }),

@@ -184,9 +184,9 @@ function Reports() {
 export const Route = createFileRoute("/reports")({
   head: () => ({
     meta: [
-      { title: "Reports | Trygc Operations OS" },
+      { title: "Reports | Trygc CRM HUB" },
       { name: "description", content: "Live revenue, sales performance, campaign delivery and client profitability reporting across Trygc entities." },
-      { property: "og:title", content: "Reports | Trygc Operations OS" },
+      { property: "og:title", content: "Reports | Trygc CRM HUB" },
       { property: "og:description", content: "Live cross-entity revenue, sales, delivery and client reporting." },
     ],
   }),

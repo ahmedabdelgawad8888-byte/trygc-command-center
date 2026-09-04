@@ -41,9 +41,9 @@ function Audit() {
 export const Route = createFileRoute("/admin/audit")({
   head: () => ({
     meta: [
-      { title: "Audit Trail | Trygc Operations OS" },
+      { title: "Audit Trail | Trygc CRM HUB" },
       { name: "description", content: "Immutable append-only audit log of every action taken across the Trygc operating environment." },
-      { property: "og:title", content: "Audit Trail | Trygc Operations OS" },
+      { property: "og:title", content: "Audit Trail | Trygc CRM HUB" },
       { property: "og:description", content: "Append-only record of who did what, when and to which record." },
     ],
   }),

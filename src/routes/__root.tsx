@@ -81,10 +81,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Trygc Operations OS — CRM, Campaigns & Finance" },
+      { title: "Trygc CRM HUB — CRM, Campaigns & Finance" },
       { name: "description", content: "The central operating environment for Trygc across Egypt and the GCC: CRM, campaign delivery, community, finance and approvals." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Trygc Operations OS" },
+      { property: "og:title", content: "Trygc CRM HUB" },
       { property: "og:description", content: "CRM, campaign operations, community, finance and approvals for Trygc across Egypt and the GCC." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

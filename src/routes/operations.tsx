@@ -83,9 +83,9 @@ function Operations() {
 export const Route = createFileRoute("/operations")({
   head: () => ({
     meta: [
-      { title: "Operations Queues | Trygc Operations OS" },
+      { title: "Operations Queues | Trygc CRM HUB" },
       { name: "description", content: "Onboarding, coordination, WhatsApp, visits, Posting Coverage and QA queues with SLA deadlines and bulk assignment." },
-      { property: "og:title", content: "Operations Queues | Trygc Operations OS" },
+      { property: "og:title", content: "Operations Queues | Trygc CRM HUB" },
       { property: "og:description", content: "Queue-based operations with SLA deadlines and bulk assignment." },
     ],
   }),

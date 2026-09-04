@@ -49,9 +49,9 @@ function Roles() {
 export const Route = createFileRoute("/admin/roles")({
   head: () => ({
     meta: [
-      { title: "Roles & Permissions | Trygc Operations OS" },
+      { title: "Roles & Permissions | Trygc CRM HUB" },
       { name: "description", content: "Role catalogue separating what people can do from which entity records they can see." },
-      { property: "og:title", content: "Roles & Permissions | Trygc Operations OS" },
+      { property: "og:title", content: "Roles & Permissions | Trygc CRM HUB" },
       { property: "og:description", content: "Permissions and data scope for every Trygc role." },
     ],
   }),

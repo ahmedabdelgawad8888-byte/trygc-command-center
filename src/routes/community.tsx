@@ -68,9 +68,9 @@ function Community() {
 export const Route = createFileRoute("/community")({
   head: () => ({
     meta: [
-      { title: "Community Workspace | Trygc Operations OS" },
+      { title: "Community Workspace | Trygc CRM HUB" },
       { name: "description", content: "Creator outreach, interest and confirmation tracking for every live Trygc campaign." },
-      { property: "og:title", content: "Community Workspace | Trygc Operations OS" },
+      { property: "og:title", content: "Community Workspace | Trygc CRM HUB" },
       { property: "og:description", content: "Outreach funnel, confirmations and replacements for creator campaigns." },
     ],
   }),

@@ -54,9 +54,9 @@ function Directory() {
 export const Route = createFileRoute("/campaigns/influencers")({
   head: () => ({
     meta: [
-      { title: "Influencer Directory | Trygc Operations OS" },
+      { title: "Influencer Directory | Trygc CRM HUB" },
       { name: "description", content: "Shared creator database with audience size, tier, reliability rating, coverage history and blacklist status." },
-      { property: "og:title", content: "Influencer Directory | Trygc Operations OS" },
+      { property: "og:title", content: "Influencer Directory | Trygc CRM HUB" },
       { property: "og:description", content: "Creator database with reliability, audience and coverage history." },
     ],
   }),

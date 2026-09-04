@@ -67,9 +67,9 @@ function Approvals() {
 export const Route = createFileRoute("/approvals")({
   head: () => ({
     meta: [
-      { title: "Approvals | Trygc Operations OS" },
+      { title: "Approvals | Trygc CRM HUB" },
       { name: "description", content: "Approve, return or reject finance, campaign, access and chart-of-accounts requests from one inbox." },
-      { property: "og:title", content: "Approvals | Trygc Operations OS" },
+      { property: "og:title", content: "Approvals | Trygc CRM HUB" },
       { property: "og:description", content: "One approval inbox across finance, campaigns, access and governance." },
     ],
   }),

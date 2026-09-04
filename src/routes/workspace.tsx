@@ -139,9 +139,9 @@ function Workspace() {
 export const Route = createFileRoute("/workspace")({
   head: () => ({
     meta: [
-      { title: "My Workspace | Trygc Operations OS" },
+      { title: "My Workspace | Trygc CRM HUB" },
       { name: "description", content: "Your personal queue: tasks due today, approvals waiting on you, assigned operations items and deals needing action." },
-      { property: "og:title", content: "My Workspace | Trygc Operations OS" },
+      { property: "og:title", content: "My Workspace | Trygc CRM HUB" },
       { property: "og:description", content: "Personal queue of tasks, approvals, operations items and deals." },
     ],
   }),

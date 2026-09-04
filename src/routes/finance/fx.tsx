@@ -44,9 +44,9 @@ function Fx() {
 export const Route = createFileRoute("/finance/fx")({
   head: () => ({
     meta: [
-      { title: "Exchange Rates | Trygc Operations OS" },
+      { title: "Exchange Rates | Trygc CRM HUB" },
       { name: "description", content: "Dated, period-locked exchange rates used to consolidate Trygc entity results into SAR." },
-      { property: "og:title", content: "Exchange Rates | Trygc Operations OS" },
+      { property: "og:title", content: "Exchange Rates | Trygc CRM HUB" },
       { property: "og:description", content: "Dated and locked FX rates used for SAR consolidation." },
     ],
   }),

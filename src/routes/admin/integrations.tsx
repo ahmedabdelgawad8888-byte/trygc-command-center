@@ -58,9 +58,9 @@ function Integrations() {
 export const Route = createFileRoute("/admin/integrations")({
   head: () => ({
     meta: [
-      { title: "Integrations | Trygc Operations OS" },
+      { title: "Integrations | Trygc CRM HUB" },
       { name: "description", content: "Honest connection status for every Trygc integration including webhook health and credential validity." },
-      { property: "og:title", content: "Integrations | Trygc Operations OS" },
+      { property: "og:title", content: "Integrations | Trygc CRM HUB" },
       { property: "og:description", content: "Live, misconfigured and failing integrations at a glance." },
     ],
   }),

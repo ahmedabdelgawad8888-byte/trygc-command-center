@@ -90,9 +90,9 @@ function Tasks() {
 export const Route = createFileRoute("/tasks")({
   head: () => ({
     meta: [
-      { title: "Tasks & PMO | Trygc Operations OS" },
+      { title: "Tasks & PMO | Trygc CRM HUB" },
       { name: "description", content: "Kanban and table views of departmental tasks with owners, deliverables, SLA dates and RAG progress." },
-      { property: "og:title", content: "Tasks & PMO | Trygc Operations OS" },
+      { property: "og:title", content: "Tasks & PMO | Trygc CRM HUB" },
       { property: "og:description", content: "Departmental task delivery with owners, deliverables and RAG progress." },
     ],
   }),

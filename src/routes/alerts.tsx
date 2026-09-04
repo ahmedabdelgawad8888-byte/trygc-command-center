@@ -49,9 +49,9 @@ function Alerts() {
 export const Route = createFileRoute("/alerts")({
   head: () => ({
     meta: [
-      { title: "Alerts & Exceptions | Trygc Operations OS" },
+      { title: "Alerts & Exceptions | Trygc CRM HUB" },
       { name: "description", content: "Stuck deals, missing posting coverage, missed visits, overdue invoices and pending governance items in one queue." },
-      { property: "og:title", content: "Alerts & Exceptions | Trygc Operations OS" },
+      { property: "og:title", content: "Alerts & Exceptions | Trygc CRM HUB" },
       { property: "og:description", content: "Every blocked item with an owner, impact and required action." },
     ],
   }),

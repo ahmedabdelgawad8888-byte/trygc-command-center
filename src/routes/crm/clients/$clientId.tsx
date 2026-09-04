@@ -222,9 +222,9 @@ function Client360() {
 export const Route = createFileRoute("/crm/clients/$clientId")({
   head: () => ({
     meta: [
-      { title: "Client 360 | Trygc Operations OS" },
+      { title: "Client 360 | Trygc CRM HUB" },
       { name: "description", content: "One client, one screen: contacts, deals, campaigns, invoices, tasks, documents and the full activity trail." },
-      { property: "og:title", content: "Client 360 | Trygc Operations OS" },
+      { property: "og:title", content: "Client 360 | Trygc CRM HUB" },
       { property: "og:description", content: "Contacts, deals, campaigns, invoices, tasks, files and activity for a single client." },
     ],
   }),

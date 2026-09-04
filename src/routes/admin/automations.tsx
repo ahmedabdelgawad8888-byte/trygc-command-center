@@ -54,9 +54,9 @@ function Automations() {
 export const Route = createFileRoute("/admin/automations")({
   head: () => ({
     meta: [
-      { title: "Automations | Trygc Operations OS" },
+      { title: "Automations | Trygc CRM HUB" },
       { name: "description", content: "When/if/then automation rules that escalate stuck deals, coverage gaps and overdue invoices." },
-      { property: "og:title", content: "Automations | Trygc Operations OS" },
+      { property: "og:title", content: "Automations | Trygc CRM HUB" },
       { property: "og:description", content: "Rules that watch records and act, with run and failure history." },
     ],
   }),
