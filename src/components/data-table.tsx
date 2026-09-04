@@ -117,7 +117,25 @@ export function DataTable<T>({
   const exportCols = prefs.columns === "all" ? columns : visible;
   const exportRows = (prefs.applyFilters ? sorted : rows.filter(inRange));
 
-  const exportCsv = () => {
+  const filterSummary = [
+    bounds ? `${bounds.from} → ${bounds.to}` : "all time",
+    prefs.applyFilters ? (drill ? `${drill.source}: ${drill.label}` : query.trim() ? `search “${query.trim()}”` : "page filters applied") : "filters ignored",
+    `${exportCols.length} columns`,
+  ].join(" · ");
+
+  // Every download is written to the immutable audit trail with its filter context.
+  const auditExport = (kind: "CSV" | "PDF") =>
+    log({
+      action: `Export ${kind}`,
+      module: "Exports",
+      recordId: exportName,
+      recordLabel: `${brandTitle} — ${exportRows.length} rows`,
+      entityId: currentUser.entityId,
+      from: filterSummary,
+      to: exportCols.map((c) => c.header).join(", "),
+    });
+
+  const buildCsv = () => {
     const head = exportCols.map((c) => `"${c.header}"`).join(",");
     const body = exportRows
       .map((r) =>
@@ -134,24 +152,16 @@ export function DataTable<T>({
     const banner = prefs.branding
       ? [`"Trygc CRM HUB"`, `"${brandTitle}"`, `"Generated ${stamp} UTC"`, rangeLine, filterLine, `""`].join("\n")
       : "";
-    const blob = new Blob([`${banner ? `${banner}\n` : ""}${head}\n${body}`], { type: "text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${fileBase}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    return `${banner ? `${banner}\n` : ""}${head}\n${body}`;
   };
 
-  const exportPdf = () => {
+  const buildPdf = () => {
     const esc = (s: unknown) => String(s ?? "").replace(/[&<>]/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[m] as string);
     const head = exportCols.map((c) => `<th>${esc(c.header)}</th>`).join("");
     const body = exportRows
       .map((r) => `<tr>${exportCols.map((c) => `<td>${esc(c.sortValue ? c.sortValue(r) : "")}</td>`).join("")}</tr>`)
       .join("");
-    const win = window.open("", "_blank", "width=1100,height=800");
-    if (!win) return;
-    win.document.write(`<!doctype html><html><head><title>Trygc CRM HUB — ${esc(brandTitle)}</title><style>
+    return `<!doctype html><html><head><title>Trygc CRM HUB — ${esc(brandTitle)}</title><style>
       *{font-family:ui-sans-serif,system-ui,Segoe UI,Arial,sans-serif}
       body{margin:32px;color:#141824}
       header{display:flex;align-items:center;gap:12px;border-bottom:3px solid #FF7A18;padding-bottom:12px;margin-bottom:20px}
@@ -168,14 +178,25 @@ export function DataTable<T>({
     </style></head><body>
       ${prefs.branding ? `<header><img src="${window.location.origin}/favicon.png" alt="Trygc" /><div><div class="brand">Trygc</div><div class="sub">CRM HUB</div></div></header>` : ""}
       <h1>${esc(brandTitle)}</h1>
-      <div class="meta">Generated ${esc(stamp)} UTC · ${exportRows.length} records · ${bounds ? `${esc(bounds.from)} → ${esc(bounds.to)}` : "all time"}${prefs.applyFilters && drill ? ` · ${esc(drill.source)}: ${esc(drill.label)}` : ""}</div>
+      <div class="meta">Generated ${esc(stamp)} UTC · ${exportRows.length} records · ${esc(filterSummary)}</div>
       <table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>
       <footer>Trygc CRM HUB — confidential internal report.</footer>
-    </body></html>`);
-    win.document.close();
-    win.focus();
-    setTimeout(() => win.print(), 400);
+    </body></html>`;
   };
+
+  const queueExport = (kind: ExportKindLocal) => {
+    auditExport(kind === "csv" ? "CSV" : "PDF");
+    enqueue({
+      title: brandTitle,
+      kind,
+      rows: exportRows.length,
+      columns: exportCols.length,
+      filters: filterSummary,
+      filename: `${fileBase}.${kind === "csv" ? "csv" : "html"}`,
+      build: kind === "csv" ? buildCsv : buildPdf,
+    });
+  };
+
 
 
   const toggleSort = (key: string) =>
