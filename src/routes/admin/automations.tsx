@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { PageHeader, Panel, Pill, Section, Stat } from "@/components/kit";
+import { ChartRow, BarChartCard, DonutChartCard, countBy, sumBy } from "@/components/charts";
 import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 import { num, shortDate } from "@/lib/format";
@@ -23,6 +24,11 @@ function Automations() {
         <Stat label={t("Total runs", "مرات التشغيل")} value={num(db.automationRules.reduce((s, r) => s + r.runs, 0))} />
         <Stat label={t("Failures", "إخفاقات")} value={num(db.automationRules.reduce((s, r) => s + r.failures, 0))} tone="danger" />
       </div>
+      <ChartRow>
+        <BarChartCard title={t("Runs per rule", "مرات التشغيل لكل قاعدة")} data={db.automationRules.map((r) => ({ name: r.name, value: r.runs }))} horizontal colorful />
+        <BarChartCard title={t("Failures per rule", "الإخفاقات لكل قاعدة")} data={db.automationRules.map((r) => ({ name: r.name, value: r.failures }))} horizontal />
+        <DonutChartCard title={t("Rule state", "حالة القواعد")} data={countBy(db.automationRules, (r) => (r.enabled ? "Enabled" : "Paused"))} />
+      </ChartRow>
       <Section title={t("Rule library", "مكتبة القواعد")}>
         <div className="grid gap-3 xl:grid-cols-2">
           {db.automationRules.map((r) => (
