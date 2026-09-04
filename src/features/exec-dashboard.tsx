@@ -221,7 +221,8 @@ export function ExecDashboard() {
       </div>
 
       <div className="grid items-start gap-4 xl:grid-cols-3">
-        <Panel className="xl:col-span-2">
+        <div className="space-y-4 xl:col-span-2">
+        <Panel>
           <Section title={t("Pipeline value by stage (SAR)", "قيمة خط الفرص حسب المرحلة")} description={t("Open deal value in each stage of the funnel.", "قيمة الصفقات المفتوحة في كل مرحلة.")}>
             <div className="h-64 w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -236,6 +237,42 @@ export function ExecDashboard() {
             </div>
           </Section>
         </Panel>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          <Panel>
+            <Section title={t("Receivables ageing (SAR)", "أعمار الذمم المدينة")} description={t("Outstanding balance by days past due.", "الأرصدة القائمة حسب أيام التأخير.")}>
+              <div className="h-56 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={ageingBuckets} margin={{ left: 4, right: 8, top: 8 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-border" />
+                    <XAxis dataKey="name" tickLine={false} axisLine={false} fontSize={11} />
+                    <YAxis tickFormatter={(v: number) => compactMoney(v, "SAR")} tickLine={false} axisLine={false} fontSize={11} width={70} />
+                    <Tooltip cursor={{ fill: "var(--color-muted)" }} formatter={(v: number) => money(v, "SAR")} contentStyle={{ borderRadius: 10, fontSize: 12 }} />
+                    <RBar dataKey="value" name={t("Outstanding", "المستحق")} fill="var(--color-chart-2)" radius={[6, 6, 0, 0]} maxBarSize={34} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </Section>
+          </Panel>
+
+          <Panel>
+            <Section title={t("Top clients by billed value (SAR)", "أعلى العملاء بقيمة الفوترة")} description={t("Issued invoices consolidated to SAR.", "الفواتير الصادرة موحّدة بالريال.")}>
+              <div className="space-y-2.5">
+                {topClients.map((c) => (
+                  <div key={c.name} className="space-y-1">
+                    <div className="flex items-center justify-between gap-2 text-xs">
+                      <span className="truncate font-medium">{c.name}</span>
+                      <span className="num text-muted-foreground">{compactMoney(c.value, "SAR")}</span>
+                    </div>
+                    <Bar value={c.value} max={topClients[0]?.value ?? 1} tone="brand" />
+                  </div>
+                ))}
+              </div>
+            </Section>
+          </Panel>
+        </div>
+        </div>
+
 
 
         <Panel>
