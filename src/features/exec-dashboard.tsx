@@ -143,7 +143,7 @@ export function ExecDashboard() {
         <Stat label={t("Pending approvals", "الموافقات المعلقة")} value={num(pendingApprovals.length)} hint={t("Waiting on a decision", "بانتظار القرار")} tone="warning" />
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-3">
+      <div className="grid items-start gap-4 xl:grid-cols-3">
         <Panel className="xl:col-span-2">
           <Section title={t("Revenue and profit by entity (SAR)", "الإيرادات والأرباح حسب الكيان")} description={t("Consolidated at the locked FX rate for the period.", "موحّدة بسعر الصرف المثبت للفترة.")}>
             <div className="h-72 w-full">
