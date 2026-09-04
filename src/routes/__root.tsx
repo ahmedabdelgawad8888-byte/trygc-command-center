@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { AppProvider } from "../lib/store";
 import { LangProvider } from "../lib/i18n";
+import { ThemeProvider } from "../lib/theme";
 import { ExportPrefsProvider } from "../lib/export-prefs";
 import { DrillProvider } from "../lib/drill";
 import { ExportQueueProvider } from "../lib/export-queue";
@@ -141,6 +142,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <LangProvider>
+        <ThemeProvider>
         <AppProvider>
           <ExportPrefsProvider>
             <ExportQueueProvider>
@@ -155,6 +157,7 @@ function RootComponent() {
             </ExportQueueProvider>
           </ExportPrefsProvider>
         </AppProvider>
+        </ThemeProvider>
       </LangProvider>
     </QueryClientProvider>
   );

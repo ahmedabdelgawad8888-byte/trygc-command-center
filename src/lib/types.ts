@@ -341,7 +341,7 @@ export interface ActivityEvent {
 
 export interface Notification {
   id: string;
-  category: "CRM" | "Campaign" | "Client" | "Finance" | "Task" | "Approval" | "System";
+  category: "CRM" | "Campaign" | "Client" | "Finance" | "Task" | "Approval" | "System" | "Calendar" | "Messaging";
   title: string;
   detail: string;
   at: string;
@@ -396,4 +396,174 @@ export interface AutomationRule {
   runs: number;
   failures: number;
   lastRun: string;
+}
+
+/* ── Calendar, reminders, mail, chat and settings ─────────────────────── */
+
+export type Cadence = "none" | "daily" | "weekly" | "biweekly" | "monthly" | "quarterly" | "yearly";
+
+export type EventType =
+  | "Meeting"
+  | "Client Review"
+  | "Campaign Milestone"
+  | "Creator Visit"
+  | "Finance Close"
+  | "Approval Deadline"
+  | "Internal"
+  | "Holiday";
+
+export interface CalendarEvent {
+  id: string;
+  title: string;
+  description?: string;
+  type: EventType;
+  entityId: string;
+  /** "YYYY-MM-DD" */
+  date: string;
+  /** "HH:MM" 24h; ignored when allDay */
+  startTime: string;
+  endTime: string;
+  allDay: boolean;
+  location?: string;
+  organizerId: string;
+  attendeeIds: string[];
+  status: "Scheduled" | "Confirmed" | "Cancelled" | "Completed";
+  /** Repeat rule for the event itself. */
+  recurrence: Cadence;
+  /** Last date a recurring event may generate an occurrence. */
+  recurrenceUntil?: string;
+  linkedType?: "client" | "campaign" | "deal" | "invoice" | "task";
+  linkedId?: string;
+  createdBy: string;
+}
+
+/** A standing notification: tells the concerned people about something on a cadence. */
+export interface ReminderSchedule {
+  id: string;
+  title: string;
+  description?: string;
+  /** Optional event this reminder is attached to. */
+  eventId?: string;
+  recipientIds: string[];
+  cadence: Cadence;
+  /** Notify this many days before each occurrence. */
+  leadDays: number;
+  /** "HH:MM" local send time. */
+  sendTime: string;
+  channels: ("in-app" | "email")[];
+  /** "YYYY-MM-DD" the schedule starts producing occurrences. */
+  startDate: string;
+  endDate?: string;
+  lastRunAt?: string;
+  active: boolean;
+  entityId: string;
+  ownerId: string;
+  category: Notification["category"];
+}
+
+export interface MailMessage {
+  id: string;
+  threadId: string;
+  folder: "inbox" | "sent" | "drafts" | "archive" | "spam" | "trash";
+  fromName: string;
+  fromEmail: string;
+  fromUserId?: string;
+  to: string[];
+  cc?: string[];
+  subject: string;
+  preview: string;
+  body: string;
+  at: string;
+  read: boolean;
+  starred: boolean;
+  attachments: { name: string; size: string }[];
+  labels: string[];
+  entityId: string;
+  linkedType?: "client" | "campaign" | "invoice" | "deal";
+  linkedId?: string;
+}
+
+export interface ChatChannel {
+  id: string;
+  name: string;
+  kind: "channel" | "direct";
+  topic?: string;
+  memberIds: string[];
+  entityId: string;
+  private: boolean;
+}
+
+export interface ChatMessage {
+  id: string;
+  channelId: string;
+  authorId: string;
+  at: string;
+  body: string;
+  /** Ids of users explicitly mentioned with @. */
+  mentions: string[];
+  reactions: { emoji: string; userIds: string[] }[];
+}
+
+export interface AppSettings {
+  organisation: {
+    legalName: string;
+    tradingName: string;
+    supportEmail: string;
+    phone: string;
+    website: string;
+    baseCurrency: Currency;
+    defaultEntityId: string;
+    fiscalYearStart: string;
+    timezone: string;
+  };
+  localisation: {
+    defaultLanguage: "en" | "ar";
+    dateFormat: "dd MMM yyyy" | "yyyy-MM-dd" | "dd/MM/yyyy";
+    numberFormat: "1,234.56" | "1.234,56";
+    weekStart: "Saturday" | "Sunday" | "Monday";
+    rtlMirrorCharts: boolean;
+  };
+  appearance: {
+    theme: "light" | "dark" | "system";
+    density: "comfortable" | "compact";
+    accent: "brand" | "orange" | "violet";
+    sidebarCollapsed: boolean;
+    showChartGrid: boolean;
+  };
+  notifications: {
+    channels: { inApp: boolean; email: boolean; digest: boolean };
+    digestCadence: Cadence;
+    digestTime: string;
+    quietHoursStart: string;
+    quietHoursEnd: string;
+    categories: Record<Notification["category"], boolean>;
+  };
+  finance: {
+    invoicePrefix: string;
+    nextInvoiceNumber: number;
+    defaultPaymentTermsDays: number;
+    overdueGraceDays: number;
+    lockFxOnIssue: boolean;
+    requireApprovalAbove: number;
+    taxRatePercent: number;
+  };
+  approvals: {
+    twoStepAboveValue: number;
+    autoEscalateAfterDays: number;
+    allowSelfApproval: boolean;
+    delegateWhenAway: boolean;
+  };
+  security: {
+    enforceTwoFactor: boolean;
+    sessionTimeoutMinutes: number;
+    passwordMinLength: number;
+    ipAllowlist: string;
+    auditRetentionDays: number;
+  };
+  data: {
+    exportBranding: boolean;
+    csvDelimiter: "," | ";" | "\t";
+    includeArchivedInExports: boolean;
+    backupCadence: Cadence;
+  };
 }

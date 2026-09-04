@@ -13,11 +13,15 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ActivityRouteImport } from './routes/activity'
 import { Route as AlertsRouteImport } from './routes/alerts'
 import { Route as ApprovalsRouteImport } from './routes/approvals'
+import { Route as CalendarRouteImport } from './routes/calendar'
+import { Route as ChatRouteImport } from './routes/chat'
 import { Route as CommunityRouteImport } from './routes/community'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as FilesRouteImport } from './routes/files'
+import { Route as InboxRouteImport } from './routes/inbox'
 import { Route as OperationsRouteImport } from './routes/operations'
 import { Route as ReportsRouteImport } from './routes/reports'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as TasksRouteImport } from './routes/tasks'
 import { Route as WorkspaceRouteImport } from './routes/workspace'
 import { Route as AdminAuditRouteImport } from './routes/admin/audit'
@@ -66,6 +70,16 @@ const ApprovalsRoute = ApprovalsRouteImport.update({
   path: '/approvals',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CalendarRoute = CalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChatRoute = ChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CommunityRoute = CommunityRouteImport.update({
   id: '/community',
   path: '/community',
@@ -81,6 +95,11 @@ const FilesRoute = FilesRouteImport.update({
   path: '/files',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InboxRoute = InboxRouteImport.update({
+  id: '/inbox',
+  path: '/inbox',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OperationsRoute = OperationsRouteImport.update({
   id: '/operations',
   path: '/operations',
@@ -89,6 +108,11 @@ const OperationsRoute = OperationsRouteImport.update({
 const ReportsRoute = ReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TasksRoute = TasksRouteImport.update({
@@ -232,11 +256,15 @@ export interface FileRoutesByFullPath {
   '/activity': typeof ActivityRoute
   '/alerts': typeof AlertsRoute
   '/approvals': typeof ApprovalsRoute
+  '/calendar': typeof CalendarRoute
+  '/chat': typeof ChatRoute
   '/community': typeof CommunityRoute
   '/dashboard': typeof DashboardRoute
   '/files': typeof FilesRoute
+  '/inbox': typeof InboxRoute
   '/operations': typeof OperationsRoute
   '/reports': typeof ReportsRoute
+  '/settings': typeof SettingsRoute
   '/tasks': typeof TasksRoute
   '/workspace': typeof WorkspaceRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -270,11 +298,15 @@ export interface FileRoutesByTo {
   '/activity': typeof ActivityRoute
   '/alerts': typeof AlertsRoute
   '/approvals': typeof ApprovalsRoute
+  '/calendar': typeof CalendarRoute
+  '/chat': typeof ChatRoute
   '/community': typeof CommunityRoute
   '/dashboard': typeof DashboardRoute
   '/files': typeof FilesRoute
+  '/inbox': typeof InboxRoute
   '/operations': typeof OperationsRoute
   '/reports': typeof ReportsRoute
+  '/settings': typeof SettingsRoute
   '/tasks': typeof TasksRoute
   '/workspace': typeof WorkspaceRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -309,11 +341,15 @@ export interface FileRoutesById {
   '/activity': typeof ActivityRoute
   '/alerts': typeof AlertsRoute
   '/approvals': typeof ApprovalsRoute
+  '/calendar': typeof CalendarRoute
+  '/chat': typeof ChatRoute
   '/community': typeof CommunityRoute
   '/dashboard': typeof DashboardRoute
   '/files': typeof FilesRoute
+  '/inbox': typeof InboxRoute
   '/operations': typeof OperationsRoute
   '/reports': typeof ReportsRoute
+  '/settings': typeof SettingsRoute
   '/tasks': typeof TasksRoute
   '/workspace': typeof WorkspaceRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -349,11 +385,15 @@ export interface FileRouteTypes {
     | '/activity'
     | '/alerts'
     | '/approvals'
+    | '/calendar'
+    | '/chat'
     | '/community'
     | '/dashboard'
     | '/files'
+    | '/inbox'
     | '/operations'
     | '/reports'
+    | '/settings'
     | '/tasks'
     | '/workspace'
     | '/admin/audit'
@@ -387,11 +427,15 @@ export interface FileRouteTypes {
     | '/activity'
     | '/alerts'
     | '/approvals'
+    | '/calendar'
+    | '/chat'
     | '/community'
     | '/dashboard'
     | '/files'
+    | '/inbox'
     | '/operations'
     | '/reports'
+    | '/settings'
     | '/tasks'
     | '/workspace'
     | '/admin/audit'
@@ -425,11 +469,15 @@ export interface FileRouteTypes {
     | '/activity'
     | '/alerts'
     | '/approvals'
+    | '/calendar'
+    | '/chat'
     | '/community'
     | '/dashboard'
     | '/files'
+    | '/inbox'
     | '/operations'
     | '/reports'
+    | '/settings'
     | '/tasks'
     | '/workspace'
     | '/admin/audit'
@@ -464,11 +512,15 @@ export interface RootRouteChildren {
   ActivityRoute: typeof ActivityRoute
   AlertsRoute: typeof AlertsRoute
   ApprovalsRoute: typeof ApprovalsRoute
+  CalendarRoute: typeof CalendarRoute
+  ChatRoute: typeof ChatRoute
   CommunityRoute: typeof CommunityRoute
   DashboardRoute: typeof DashboardRoute
   FilesRoute: typeof FilesRoute
+  InboxRoute: typeof InboxRoute
   OperationsRoute: typeof OperationsRoute
   ReportsRoute: typeof ReportsRoute
+  SettingsRoute: typeof SettingsRoute
   TasksRoute: typeof TasksRoute
   WorkspaceRoute: typeof WorkspaceRoute
   AdminAuditRoute: typeof AdminAuditRoute
@@ -528,6 +580,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApprovalsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/calendar': {
+      id: '/calendar'
+      path: '/calendar'
+      fullPath: '/calendar'
+      preLoaderRoute: typeof CalendarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chat': {
+      id: '/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof ChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/community': {
       id: '/community'
       path: '/community'
@@ -549,6 +615,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FilesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/inbox': {
+      id: '/inbox'
+      path: '/inbox'
+      fullPath: '/inbox'
+      preLoaderRoute: typeof InboxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/operations': {
       id: '/operations'
       path: '/operations'
@@ -561,6 +634,13 @@ declare module '@tanstack/react-router' {
       path: '/reports'
       fullPath: '/reports'
       preLoaderRoute: typeof ReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tasks': {
@@ -760,11 +840,15 @@ const rootRouteChildren: RootRouteChildren = {
   ActivityRoute: ActivityRoute,
   AlertsRoute: AlertsRoute,
   ApprovalsRoute: ApprovalsRoute,
+  CalendarRoute: CalendarRoute,
+  ChatRoute: ChatRoute,
   CommunityRoute: CommunityRoute,
   DashboardRoute: DashboardRoute,
   FilesRoute: FilesRoute,
+  InboxRoute: InboxRoute,
   OperationsRoute: OperationsRoute,
   ReportsRoute: ReportsRoute,
+  SettingsRoute: SettingsRoute,
   TasksRoute: TasksRoute,
   WorkspaceRoute: WorkspaceRoute,
   AdminAuditRoute: AdminAuditRoute,

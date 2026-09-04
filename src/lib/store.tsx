@@ -1,12 +1,18 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
 import * as seed from "./data/seed";
+import * as collab from "./data/collab-seed";
+import { nextRun } from "./calendar";
 import type {
   Account,
   ActivityEvent,
+  AppSettings,
   Approval,
   AutomationRule,
+  CalendarEvent,
   Campaign,
   CampaignInfluencer,
+  ChatChannel,
+  ChatMessage,
   Client,
   CoaRequest,
   Contact,
@@ -20,8 +26,10 @@ import type {
   Integration,
   Invoice,
   LeadStage,
+  MailMessage,
   Notification,
   Payment,
+  ReminderSchedule,
   QueueItem,
   RoleDef,
   SaasSeat,
@@ -56,6 +64,12 @@ interface DB {
   integrations: Integration[];
   saasSeats: SaasSeat[];
   automationRules: AutomationRule[];
+  calendarEvents: CalendarEvent[];
+  reminderSchedules: ReminderSchedule[];
+  mail: MailMessage[];
+  chatChannels: ChatChannel[];
+  chatMessages: ChatMessage[];
+  settings: AppSettings;
 }
 
 const initialDb: DB = {
@@ -82,6 +96,12 @@ const initialDb: DB = {
   integrations: seed.integrations,
   saasSeats: seed.saasSeats,
   automationRules: seed.automationRules,
+  calendarEvents: collab.calendarEvents,
+  reminderSchedules: collab.reminderSchedules,
+  mail: collab.mailMessages,
+  chatChannels: collab.chatChannels,
+  chatMessages: collab.chatMessages,
+  settings: collab.defaultSettings,
 };
 
 function nowStamp() {
@@ -131,6 +151,35 @@ interface Ctx {
     setUserStatus: (id: string, status: User["status"]) => void;
     toggleAutomation: (id: string) => void;
     setSeatStatus: (id: string, status: SaasSeat["status"]) => void;
+
+    /* Calendar */
+    addEvent: (e: Omit<CalendarEvent, "id" | "createdBy">) => CalendarEvent;
+    updateEvent: (id: string, patch: Partial<CalendarEvent>) => void;
+    setEventStatus: (id: string, status: CalendarEvent["status"]) => void;
+    deleteEvent: (id: string) => void;
+
+    /* Reminder schedules */
+    addReminder: (r: Omit<ReminderSchedule, "id" | "ownerId">) => ReminderSchedule;
+    updateReminder: (id: string, patch: Partial<ReminderSchedule>) => void;
+    toggleReminder: (id: string) => void;
+    deleteReminder: (id: string) => void;
+    /** Fire a schedule now: notifies every recipient and stamps lastRunAt. */
+    runReminder: (id: string) => void;
+
+    /* Mail */
+    sendMail: (m: Omit<MailMessage, "id" | "threadId" | "at" | "read" | "folder"> & { threadId?: string }) => void;
+    setMailRead: (id: string, read: boolean) => void;
+    toggleMailStar: (id: string) => void;
+    moveMail: (id: string, folder: MailMessage["folder"]) => void;
+
+    /* Chat */
+    sendChat: (channelId: string, body: string) => void;
+    toggleReaction: (messageId: string, emoji: string) => void;
+    addChannel: (c: Omit<ChatChannel, "id">) => ChatChannel;
+
+    /* Settings */
+    updateSettings: <K extends keyof AppSettings>(section: K, patch: Partial<AppSettings[K]>) => void;
+    resetSettings: () => void;
   };
 }
 
@@ -502,6 +551,223 @@ export function AppProvider({ children }: { children: ReactNode }) {
           }),
         toggleAutomation: (id) =>
           setDb((prev) => ({ ...prev, automationRules: prev.automationRules.map((r) => (r.id === id ? { ...r, enabled: !r.enabled } : r)) })),
+        /* ── Calendar ─────────────────────────────────────────────── */
+        addEvent: (e) => {
+          const event: CalendarEvent = { ...e, id: uid("ev"), createdBy: currentUserId };
+          setDb((prev) =>
+            pushActivity({ ...prev, calendarEvents: [...prev.calendarEvents, event] }, {
+              action: "Created calendar event",
+              module: "Calendar",
+              recordId: event.id,
+              recordLabel: event.title,
+              entityId: event.entityId,
+              to: event.date,
+            }),
+          );
+          return event;
+        },
+        updateEvent: (id, patch) =>
+          setDb((prev) => {
+            const ev = prev.calendarEvents.find((x) => x.id === id);
+            if (!ev) return prev;
+            return pushActivity(
+              { ...prev, calendarEvents: prev.calendarEvents.map((x) => (x.id === id ? { ...x, ...patch } : x)) },
+              { action: "Updated calendar event", module: "Calendar", recordId: id, recordLabel: ev.title, entityId: ev.entityId },
+            );
+          }),
+        setEventStatus: (id, status) =>
+          setDb((prev) => {
+            const ev = prev.calendarEvents.find((x) => x.id === id);
+            if (!ev) return prev;
+            return pushActivity(
+              { ...prev, calendarEvents: prev.calendarEvents.map((x) => (x.id === id ? { ...x, status } : x)) },
+              { action: "Changed event status", module: "Calendar", recordId: id, recordLabel: ev.title, entityId: ev.entityId, from: ev.status, to: status },
+            );
+          }),
+        deleteEvent: (id) =>
+          setDb((prev) => {
+            const ev = prev.calendarEvents.find((x) => x.id === id);
+            if (!ev) return prev;
+            return pushActivity(
+              {
+                ...prev,
+                calendarEvents: prev.calendarEvents.filter((x) => x.id !== id),
+                // Reminders hang off events; unlink rather than orphan them.
+                reminderSchedules: prev.reminderSchedules.map((r) => {
+                  if (r.eventId !== id) return r;
+                  const { eventId: _unlinked, ...rest } = r;
+                  return rest;
+                }),
+              },
+              { action: "Deleted calendar event", module: "Calendar", recordId: id, recordLabel: ev.title, entityId: ev.entityId },
+            );
+          }),
+
+        /* ── Reminder schedules ───────────────────────────────────── */
+        addReminder: (r) => {
+          const reminder: ReminderSchedule = { ...r, id: uid("rs"), ownerId: currentUserId };
+          setDb((prev) =>
+            pushActivity({ ...prev, reminderSchedules: [...prev.reminderSchedules, reminder] }, {
+              action: "Created reminder schedule",
+              module: "Calendar",
+              recordId: reminder.id,
+              recordLabel: reminder.title,
+              entityId: reminder.entityId,
+              to: reminder.cadence,
+            }),
+          );
+          return reminder;
+        },
+        updateReminder: (id, patch) =>
+          setDb((prev) => ({
+            ...prev,
+            reminderSchedules: prev.reminderSchedules.map((r) => (r.id === id ? { ...r, ...patch } : r)),
+          })),
+        toggleReminder: (id) =>
+          setDb((prev) => {
+            const r = prev.reminderSchedules.find((x) => x.id === id);
+            if (!r) return prev;
+            return pushActivity(
+              { ...prev, reminderSchedules: prev.reminderSchedules.map((x) => (x.id === id ? { ...x, active: !x.active } : x)) },
+              { action: r.active ? "Paused reminder schedule" : "Activated reminder schedule", module: "Calendar", recordId: id, recordLabel: r.title, entityId: r.entityId },
+            );
+          }),
+        deleteReminder: (id) =>
+          setDb((prev) => {
+            const r = prev.reminderSchedules.find((x) => x.id === id);
+            if (!r) return prev;
+            return pushActivity({ ...prev, reminderSchedules: prev.reminderSchedules.filter((x) => x.id !== id) }, {
+              action: "Deleted reminder schedule",
+              module: "Calendar",
+              recordId: id,
+              recordLabel: r.title,
+              entityId: r.entityId,
+            });
+          }),
+        runReminder: (id) =>
+          setDb((prev) => {
+            const r = prev.reminderSchedules.find((x) => x.id === id);
+            if (!r) return prev;
+            // One notification per recipient, so each concerned person gets their own.
+            const notes: Notification[] = r.recipientIds.map((recipientId) => ({
+              id: uid("n"),
+              category: r.category,
+              title: r.title,
+              detail: `${r.description ?? "Scheduled reminder"} — for ${prev.users.find((u) => u.id === recipientId)?.name ?? "you"}`,
+              at: nowStamp(),
+              priority: "Medium",
+              read: false,
+              link: "/calendar",
+            }));
+            return pushActivity(
+              {
+                ...prev,
+                notifications: [...notes, ...prev.notifications],
+                reminderSchedules: prev.reminderSchedules.map((x) => (x.id === id ? { ...x, lastRunAt: seed.TODAY } : x)),
+              },
+              {
+                action: "Sent scheduled reminder",
+                module: "Calendar",
+                recordId: id,
+                recordLabel: r.title,
+                entityId: r.entityId,
+                to: `${r.recipientIds.length} recipients`,
+              },
+            );
+          }),
+
+        /* ── Mail ─────────────────────────────────────────────────── */
+        sendMail: (m) =>
+          setDb((prev) => {
+            const msg: MailMessage = {
+              ...m,
+              id: uid("m"),
+              threadId: m.threadId ?? uid("t"),
+              at: nowStamp(),
+              read: true,
+              folder: "sent",
+            };
+            return pushActivity({ ...prev, mail: [msg, ...prev.mail] }, {
+              action: "Sent email",
+              module: "Email",
+              recordId: msg.id,
+              recordLabel: msg.subject,
+              entityId: msg.entityId,
+              to: msg.to.join(", "),
+            });
+          }),
+        setMailRead: (id, read) =>
+          setDb((prev) => ({ ...prev, mail: prev.mail.map((m) => (m.id === id ? { ...m, read } : m)) })),
+        toggleMailStar: (id) =>
+          setDb((prev) => ({ ...prev, mail: prev.mail.map((m) => (m.id === id ? { ...m, starred: !m.starred } : m)) })),
+        moveMail: (id, folder) =>
+          setDb((prev) => {
+            const m = prev.mail.find((x) => x.id === id);
+            if (!m) return prev;
+            return pushActivity({ ...prev, mail: prev.mail.map((x) => (x.id === id ? { ...x, folder } : x)) }, {
+              action: "Moved email",
+              module: "Email",
+              recordId: id,
+              recordLabel: m.subject,
+              entityId: m.entityId,
+              from: m.folder,
+              to: folder,
+            });
+          }),
+
+        /* ── Chat ─────────────────────────────────────────────────── */
+        sendChat: (channelId, body) =>
+          setDb((prev) => {
+            // "@firstname" mentions resolve to real user ids so they can drive notifications.
+            const mentions = prev.users
+              .filter((u) => body.toLowerCase().includes(`@${(u.name.split(" ")[0] ?? "").toLowerCase()}`))
+              .map((u) => u.id);
+            const msg: ChatMessage = { id: uid("cx"), channelId, authorId: currentUserId, at: nowStamp(), body, mentions, reactions: [] };
+            const channel = prev.chatChannels.find((c) => c.id === channelId);
+            const author = prev.users.find((u) => u.id === currentUserId)?.name ?? "Someone";
+            const where = channel?.kind === "direct" ? "Direct message" : `#${channel?.name ?? ""}`;
+            const mentionNotes: Notification[] = mentions
+              .filter((mid) => mid !== currentUserId)
+              .map((mid) => ({
+                id: uid("n"),
+                category: "Messaging" as const,
+                title: `${author} mentioned ${prev.users.find((u) => u.id === mid)?.name ?? "you"}`,
+                detail: `${where} — ${body.slice(0, 90)}`,
+                at: nowStamp(),
+                priority: "Medium" as const,
+                read: false,
+                link: "/chat",
+              }));
+            return { ...prev, chatMessages: [...prev.chatMessages, msg], notifications: [...mentionNotes, ...prev.notifications] };
+          }),
+        toggleReaction: (messageId, emoji) =>
+          setDb((prev) => ({
+            ...prev,
+            chatMessages: prev.chatMessages.map((m) => {
+              if (m.id !== messageId) return m;
+              const existing = m.reactions.find((r) => r.emoji === emoji);
+              if (!existing) return { ...m, reactions: [...m.reactions, { emoji, userIds: [currentUserId] }] };
+              const mine = existing.userIds.includes(currentUserId);
+              const userIds = mine ? existing.userIds.filter((u) => u !== currentUserId) : [...existing.userIds, currentUserId];
+              return {
+                ...m,
+                reactions: userIds.length
+                  ? m.reactions.map((r) => (r.emoji === emoji ? { ...r, userIds } : r))
+                  : m.reactions.filter((r) => r.emoji !== emoji),
+              };
+            }),
+          })),
+        addChannel: (c) => {
+          const channel: ChatChannel = { ...c, id: uid("ch") };
+          setDb((prev) => ({ ...prev, chatChannels: [...prev.chatChannels, channel] }));
+          return channel;
+        },
+
+        /* ── Settings ─────────────────────────────────────────────── */
+        updateSettings: (section, patch) =>
+          setDb((prev) => ({ ...prev, settings: { ...prev.settings, [section]: { ...prev.settings[section], ...patch } } })),
+        resetSettings: () => setDb((prev) => ({ ...prev, settings: collab.defaultSettings })),
+
         setSeatStatus: (id, status) =>
           setDb((prev) => {
             const s = prev.saasSeats.find((x) => x.id === id);

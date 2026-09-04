@@ -37,15 +37,7 @@ import { useLang } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { shortDate } from "@/lib/format";
 import { ExportQueueButton } from "@/components/export-queue-panel";
-
-function useTheme() {
-  const [dark, setDark] = useState(false);
-  useEffect(() => {
-    if (typeof document === "undefined") return;
-    document.documentElement.classList.toggle("dark", dark);
-  }, [dark]);
-  return { dark, toggle: () => setDark((d) => !d) };
-}
+import { useTheme } from "@/lib/theme";
 
 function NavLinks({ collapsed, onNavigate }: { collapsed?: boolean; onNavigate?: () => void }) {
   const { pathname } = useRouterState({ select: (s) => s.location });
