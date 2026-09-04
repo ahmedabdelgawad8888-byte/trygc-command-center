@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Check, X } from "lucide-react";
 import { PageHeader, Panel, Pill, Section, Stat } from "@/components/kit";
+import { ChartRow, BarChartCard, DonutChartCard, countBy, sumBy } from "@/components/charts";
 import { useApp } from "@/lib/store";
 import { useLang } from "@/lib/i18n";
 
@@ -19,6 +20,10 @@ function Roles() {
         <Stat label={t("Group-scoped roles", "أدوار على مستوى المجموعة")} value={String(db.roles.filter((r) => r.scope === "Group").length)} tone="orange" />
         <Stat label={t("Roles that may edit accounts", "أدوار تعدّل الحسابات")} value={String(db.roles.filter((r) => r.canEditCOA).length)} tone="danger" />
       </div>
+      <ChartRow cols={2}>
+        <BarChartCard title={t("People per role", "عدد الأشخاص لكل دور")} data={db.roles.map((r) => ({ name: r.name, value: r.members }))} horizontal colorful />
+        <DonutChartCard title={t("Roles by data scope", "الأدوار حسب نطاق البيانات")} data={countBy(db.roles, (r) => r.scope)} />
+      </ChartRow>
       <Section title={t("Role catalogue", "دليل الأدوار")}>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {db.roles.map((r) => (
