@@ -21,3 +21,8 @@
 ## Phase 2 (architecture ready)
 - Advanced accounting/period close, automation builder UI, pCloud live adapter,
   Zoho live import, full Arabic copy translation, deeper analytics.
+
+## Visual pass (Sept 4)
+- [x] Fixed pipeline-by-stage chart (funnel bars)
+- [x] Use uploaded Trygc logo image everywhere
+- [x] Added overview charts to CRM, campaigns, community, ops, tasks, finance and files pages
