@@ -31,3 +31,8 @@
 - [x] Shared export preferences panel (date range, filters, columns, branding) applied to every CSV/PDF
 - [x] Click any chart segment to filter the records table on that page (with clearable chip)
 - [x] Export buttons hidden for roles without export rights; confidential client profitability gated
+
+## Export queue, drill panel, export audit (done)
+- Export queue with progress + ready notifications (top bar)
+- Right-side drill-down panel with breadcrumbs and clearable filters
+- Every CSV/PDF export written to the audit trail with filters and row counts

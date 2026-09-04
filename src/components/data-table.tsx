@@ -1,5 +1,5 @@
-import { useMemo, useState, type ReactNode } from "react";
-import { ArrowDown, ArrowUp, ChevronsUpDown, Download, FileText, Lock, Search, Settings2, X } from "lucide-react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { ArrowDown, ArrowUp, ChevronsUpDown, Download, FileText, Lock, PanelRightOpen, Search, Settings2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,9 @@ import { cn } from "@/lib/utils";
 import { useApp } from "@/lib/store";
 import { useDrill } from "@/lib/drill";
 import { useExportPrefs } from "@/lib/export-prefs";
+import { useExportQueue } from "@/lib/export-queue";
 import { ExportPreferencesPanel } from "@/components/export-preferences";
+
 
 export interface Column<T> {
   key: string;
@@ -57,10 +59,12 @@ export function DataTable<T>({
   const [hidden, setHidden] = useState<string[]>(columns.filter((c) => c.defaultHidden).map((c) => c.key));
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState<string[]>([]);
-  const { can } = useApp();
+  const { can, log, currentUser } = useApp();
   const canExport = can("export");
-  const { drill, setDrill } = useDrill();
+  const { drill, trail, setDrill, registerPanel, setPanelOpen } = useDrill();
   const { prefs, bounds } = useExportPrefs();
+  const { enqueue } = useExportQueue();
+
 
   const visible = columns.filter((c) => !hidden.includes(c.key));
 
@@ -106,6 +110,21 @@ export function DataTable<T>({
   const current = Math.min(page, pageCount - 1);
   const pageRows = sorted.slice(current * pageSize, current * pageSize + pageSize);
 
+  // Feed the right-side drill-down panel with the currently filtered records.
+  useEffect(() => {
+    if (!drill) {
+      registerPanel(null);
+      return;
+    }
+    registerPanel({
+      title: exportName.replace(/^trygc-?/, "").replace(/[-_]/g, " ").replace(/\b\w/g, (m) => m.toUpperCase()),
+      headers: visible.slice(0, 4).map((c) => c.header),
+      rows: sorted.slice(0, 50).map((r) => visible.slice(0, 4).map((c) => String(c.sortValue ? c.sortValue(r) : ""))),
+      total: sorted.length,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [drill, sorted]);
+
   const brandTitle = exportName.replace(/^trygc-?/, "").replace(/[-_]/g, " ").replace(/\b\w/g, (m) => m.toUpperCase()) || "Export";
   const stamp = new Date().toISOString().slice(0, 16).replace("T", " ");
   const fileBase = `trygc-crm-hub-${exportName.replace(/^trygc-?/, "")}`;
@@ -113,7 +132,25 @@ export function DataTable<T>({
   const exportCols = prefs.columns === "all" ? columns : visible;
   const exportRows = (prefs.applyFilters ? sorted : rows.filter(inRange));
 
-  const exportCsv = () => {
+  const filterSummary = [
+    bounds ? `${bounds.from} → ${bounds.to}` : "all time",
+    prefs.applyFilters ? (drill ? `${drill.source}: ${drill.label}` : query.trim() ? `search “${query.trim()}”` : "page filters applied") : "filters ignored",
+    `${exportCols.length} columns`,
+  ].join(" · ");
+
+  // Every download is written to the immutable audit trail with its filter context.
+  const auditExport = (kind: "CSV" | "PDF") =>
+    log({
+      action: `Export ${kind}`,
+      module: "Exports",
+      recordId: exportName,
+      recordLabel: `${brandTitle} — ${exportRows.length} rows`,
+      entityId: currentUser.entityId,
+      from: filterSummary,
+      to: exportCols.map((c) => c.header).join(", "),
+    });
+
+  const buildCsv = () => {
     const head = exportCols.map((c) => `"${c.header}"`).join(",");
     const body = exportRows
       .map((r) =>
@@ -130,24 +167,16 @@ export function DataTable<T>({
     const banner = prefs.branding
       ? [`"Trygc CRM HUB"`, `"${brandTitle}"`, `"Generated ${stamp} UTC"`, rangeLine, filterLine, `""`].join("\n")
       : "";
-    const blob = new Blob([`${banner ? `${banner}\n` : ""}${head}\n${body}`], { type: "text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${fileBase}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    return `${banner ? `${banner}\n` : ""}${head}\n${body}`;
   };
 
-  const exportPdf = () => {
+  const buildPdf = () => {
     const esc = (s: unknown) => String(s ?? "").replace(/[&<>]/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[m] as string);
     const head = exportCols.map((c) => `<th>${esc(c.header)}</th>`).join("");
     const body = exportRows
       .map((r) => `<tr>${exportCols.map((c) => `<td>${esc(c.sortValue ? c.sortValue(r) : "")}</td>`).join("")}</tr>`)
       .join("");
-    const win = window.open("", "_blank", "width=1100,height=800");
-    if (!win) return;
-    win.document.write(`<!doctype html><html><head><title>Trygc CRM HUB — ${esc(brandTitle)}</title><style>
+    return `<!doctype html><html><head><title>Trygc CRM HUB — ${esc(brandTitle)}</title><style>
       *{font-family:ui-sans-serif,system-ui,Segoe UI,Arial,sans-serif}
       body{margin:32px;color:#141824}
       header{display:flex;align-items:center;gap:12px;border-bottom:3px solid #FF7A18;padding-bottom:12px;margin-bottom:20px}
@@ -164,14 +193,25 @@ export function DataTable<T>({
     </style></head><body>
       ${prefs.branding ? `<header><img src="${window.location.origin}/favicon.png" alt="Trygc" /><div><div class="brand">Trygc</div><div class="sub">CRM HUB</div></div></header>` : ""}
       <h1>${esc(brandTitle)}</h1>
-      <div class="meta">Generated ${esc(stamp)} UTC · ${exportRows.length} records · ${bounds ? `${esc(bounds.from)} → ${esc(bounds.to)}` : "all time"}${prefs.applyFilters && drill ? ` · ${esc(drill.source)}: ${esc(drill.label)}` : ""}</div>
+      <div class="meta">Generated ${esc(stamp)} UTC · ${exportRows.length} records · ${esc(filterSummary)}</div>
       <table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>
       <footer>Trygc CRM HUB — confidential internal report.</footer>
-    </body></html>`);
-    win.document.close();
-    win.focus();
-    setTimeout(() => win.print(), 400);
+    </body></html>`;
   };
+
+  const queueExport = (kind: "csv" | "pdf") => {
+    auditExport(kind === "csv" ? "CSV" : "PDF");
+    enqueue({
+      title: brandTitle,
+      kind,
+      rows: exportRows.length,
+      columns: exportCols.length,
+      filters: filterSummary,
+      filename: `${fileBase}.${kind === "csv" ? "csv" : "html"}`,
+      build: kind === "csv" ? buildCsv : buildPdf,
+    });
+  };
+
 
 
   const toggleSort = (key: string) =>
@@ -226,10 +266,10 @@ export function DataTable<T>({
           {canExport ? (
             <>
               <ExportPreferencesPanel compact />
-              <Button variant="outline" size="sm" onClick={exportCsv}>
+              <Button variant="outline" size="sm" onClick={() => queueExport("csv")}>
                 <Download className="size-4" /> CSV
               </Button>
-              <Button variant="outline" size="sm" onClick={exportPdf}>
+              <Button variant="outline" size="sm" onClick={() => queueExport("pdf")}>
                 <FileText className="size-4" /> PDF
               </Button>
             </>
@@ -244,8 +284,16 @@ export function DataTable<T>({
 
       {drill ? (
         <div className="flex flex-wrap items-center gap-2 rounded-md border border-primary/30 bg-brand-soft px-3 py-1.5 text-xs text-brand">
-          <span className="font-medium">{drill.source}:</span>
-          <span>{drill.label}</span>
+          {trail.map((d, i) => (
+            <span key={`${d.source}-${d.label}`} className="flex items-center gap-1">
+              {i > 0 ? <span className="opacity-50">/</span> : null}
+              <span className="font-medium">{d.source}:</span>
+              <span>{d.label}</span>
+            </span>
+          ))}
+          <button onClick={() => setPanelOpen(true)} className="inline-flex items-center gap-1 rounded px-1 py-0.5 hover:bg-background/60">
+            <PanelRightOpen className="size-3" /> Open panel
+          </button>
           <button onClick={() => setDrill(null)} className="inline-flex items-center gap-1 rounded px-1 py-0.5 hover:bg-background/60" aria-label="Clear chart filter">
             <X className="size-3" /> Clear
           </button>
