@@ -36,3 +36,13 @@
 - Export queue with progress + ready notifications (top bar)
 - Right-side drill-down panel with breadcrumbs and clearable filters
 - Every CSV/PDF export written to the audit trail with filters and row counts
+
+## Theme + dashboard analytics (Sep 4)
+- [ ] Single theme token system (color, type, spacing) used by all components
+- [ ] Dark mode contrast pass (text, borders, focus rings, status colors)
+- [ ] Reference chart palette/styling across overview + drill-down charts
+- [ ] Branding alignment (logo, header, sidebar accents, favicon, metadata)
+- [ ] Collections performance chart (collected vs invoiced) with drill-down
+- [ ] KPI metric strip: overdue receivables, cash collected MTD, campaign SLA, open approvals
+- [ ] Branch performance breakdown visual with global filter
+- [ ] Recent activity timeline widget linking to records

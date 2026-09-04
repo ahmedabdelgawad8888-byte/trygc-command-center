@@ -88,6 +88,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Trygc CRM HUB — CRM, Campaigns & Finance" },
       { name: "description", content: "The central operating environment for Trygc across Egypt and the GCC: CRM, campaign delivery, community, finance and approvals." },
       { name: "author", content: "Lovable" },
+      { name: "theme-color", content: "#0b0b0f" },
       { property: "og:title", content: "Trygc CRM HUB" },
       { property: "og:description", content: "CRM, campaign operations, community, finance and approvals for Trygc across Egypt and the GCC." },
       { property: "og:type", content: "website" },

@@ -19,7 +19,8 @@ import { cn } from "@/lib/utils";
 
 export type ChartPoint = { name: string; value: number };
 
-const PALETTE = [
+/** Single source of truth for chart colours + styling (reference palette). */
+export const CHART_PALETTE = [
   "var(--color-chart-1)",
   "var(--color-chart-2)",
   "var(--color-chart-3)",
@@ -27,9 +28,24 @@ const PALETTE = [
   "var(--color-chart-5)",
   "var(--color-chart-6)",
 ];
+const PALETTE = CHART_PALETTE;
 
-const AXIS = { tickLine: false, axisLine: false, fontSize: 11 } as const;
-const TOOLTIP = { borderRadius: 10, fontSize: 12, border: "1px solid var(--color-border)", background: "var(--color-card)" } as const;
+export const CHART_AXIS = { tickLine: false, axisLine: false, fontSize: 11, stroke: "var(--color-chart-axis)" } as const;
+export const CHART_GRID = { strokeDasharray: "3 3", stroke: "var(--color-chart-grid)" } as const;
+export const CHART_TOOLTIP = {
+  borderRadius: 10,
+  fontSize: 12,
+  border: "1px solid var(--color-border)",
+  background: "var(--color-popover)",
+  color: "var(--color-popover-foreground)",
+  boxShadow: "var(--shadow-panel)",
+} as const;
+export const CHART_TOOLTIP_LABEL = { color: "var(--color-muted-foreground)", fontSize: 11 } as const;
+export const CHART_CURSOR = { fill: "color-mix(in oklab, var(--color-muted) 60%, transparent)" } as const;
+export const CHART_LEGEND = { fontSize: 11, color: "var(--color-muted-foreground)" } as const;
+const AXIS = CHART_AXIS;
+const TOOLTIP = CHART_TOOLTIP;
+
 
 /** Click-through: selecting a segment filters the records table on the same page. */
 function useChartDrill(title: string) {
@@ -79,7 +95,7 @@ export function BarChartCard({
     <Frame title={title} description={description} className={className}>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} layout={horizontal ? "vertical" : "horizontal"} margin={{ left: 4, right: 12, top: 6, bottom: 4 }} barCategoryGap={horizontal ? 8 : 14}>
-          <CartesianGrid strokeDasharray="3 3" vertical={horizontal} horizontal={!horizontal} className="stroke-border" />
+          <CartesianGrid {...CHART_GRID} vertical={horizontal} horizontal={!horizontal} />
           <XAxis
             type={horizontal ? "number" : "category"}
             {...(horizontal ? { tickFormatter: fmt, tickCount: 4, interval: "preserveStartEnd" as const } : { dataKey: "name" as const, interval: 0 as const })}
@@ -91,7 +107,7 @@ export function BarChartCard({
             width={horizontal ? 104 : 64}
             {...AXIS}
           />
-          <Tooltip cursor={{ fill: "color-mix(in oklab, var(--color-muted) 60%, transparent)" }} formatter={(v: number) => fmt(v)} contentStyle={TOOLTIP} />
+          <Tooltip cursor={CHART_CURSOR} formatter={(v: number) => fmt(v)} contentStyle={TOOLTIP} labelStyle={CHART_TOOLTIP_LABEL} />
           <Bar
             dataKey="value"
             name={title}
@@ -145,8 +161,8 @@ export function DonutChartCard({
               <Cell key={d.name} fill={PALETTE[i % PALETTE.length]} fillOpacity={dim(d.name)} onClick={() => pick(d.name)} />
             ))}
           </Pie>
-          <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: 11 }} />
-          <Tooltip formatter={(v: number) => fmt(v)} contentStyle={TOOLTIP} />
+          <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={CHART_LEGEND} />
+          <Tooltip formatter={(v: number) => fmt(v)} contentStyle={TOOLTIP} labelStyle={CHART_TOOLTIP_LABEL} />
         </PieChart>
       </ResponsiveContainer>
     </Frame>
@@ -179,10 +195,10 @@ export function TrendChartCard({
               <stop offset="100%" stopColor={PALETTE[0]} stopOpacity={0.02} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-border" />
+          <CartesianGrid {...CHART_GRID} vertical={false} />
           <XAxis dataKey="name" {...AXIS} />
           <YAxis tickFormatter={fmt} width={64} {...AXIS} />
-          <Tooltip formatter={(v: number) => fmt(v)} contentStyle={TOOLTIP} />
+          <Tooltip formatter={(v: number) => fmt(v)} contentStyle={TOOLTIP} labelStyle={CHART_TOOLTIP_LABEL} />
           <Area type="linear" dataKey="value" name={title} stroke={PALETTE[0]} strokeWidth={2} fill={`url(#${id})`} dot={{ r: 2 }} />
         </AreaChart>
       </ResponsiveContainer>
@@ -210,4 +226,53 @@ export function sumBy<T>(rows: T[], key: (r: T) => string, amount: (r: T) => num
     m.set(k, (m.get(k) ?? 0) + amount(r));
   });
   return [...m.entries()].map(([name, value]) => ({ name, value: Math.round(value) }));
+}
+
+/** Grouped multi-series bar chart (e.g. collected vs invoiced) sharing the reference styling. */
+export function SeriesBarChartCard({
+  title,
+  description,
+  data,
+  series,
+  format,
+  className,
+  onSelect,
+  active,
+}: {
+  title: string;
+  description?: string | undefined;
+  data: Array<Record<string, string | number>>;
+  series: { key: string; label: string; color?: string }[];
+  format?: ((v: number) => string) | undefined;
+  className?: string | undefined;
+  onSelect?: ((name: string) => void) | undefined;
+  active?: string | null | undefined;
+}) {
+  const fmt = format ?? ((v: number) => String(v));
+  return (
+    <Frame title={title} description={description} className={className}>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart
+          data={data}
+          margin={{ left: 4, right: 12, top: 6, bottom: 4 }}
+          barCategoryGap={16}
+          className={onSelect ? "cursor-pointer" : ""}
+          onClick={(e: { activeLabel?: string | number }) => onSelect?.(String(e?.activeLabel ?? ""))}
+        >
+          <CartesianGrid {...CHART_GRID} vertical={false} />
+          <XAxis dataKey="name" {...CHART_AXIS} />
+          <YAxis tickFormatter={fmt} width={68} {...CHART_AXIS} />
+          <Tooltip cursor={CHART_CURSOR} formatter={(v: number) => fmt(v)} contentStyle={CHART_TOOLTIP} labelStyle={CHART_TOOLTIP_LABEL} />
+          <Legend verticalAlign="bottom" height={28} iconType="circle" wrapperStyle={CHART_LEGEND} />
+          {series.map((s, i) => (
+            <Bar key={s.key} dataKey={s.key} name={s.label} fill={s.color ?? PALETTE[i % PALETTE.length]} radius={[6, 6, 0, 0]} maxBarSize={26}>
+              {data.map((d) => (
+                <Cell key={`${s.key}-${d["name"]}`} fillOpacity={active && active !== d["name"] ? 0.28 : 1} />
+              ))}
+            </Bar>
+          ))}
+        </BarChart>
+      </ResponsiveContainer>
+    </Frame>
+  );
 }
